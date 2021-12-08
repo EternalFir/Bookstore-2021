@@ -104,21 +104,17 @@
 
 ### 运行 Operating
 
-*参见 [代码结构及说明 Structures and Descriptions of Code](# 代码结构及说明 Structures and Descriptions of Code)*
-
 - 首先调用 `void init()` 先检查文件是否存在，如不存在，则建立文件。
 
 - 构造 `AccountManagement` 以及 `BookManagement` 类
 
-- 程序为一个循环的 try 块
+- 程序为一个循环的 try-catch 块
 
 - 每次读入一行，输入 token scanner，分析输入内容，调用函数
 
 
 
 ### 储存 Storing
-
-*参见 [储存结构 Storage Structure](# 储存结构 Storage Structure)*
 
 #### 账户储存
 
@@ -138,13 +134,19 @@
 
 - 储存图书信息的数据表
 
-- 由 ISBN  为依据的指向数据的索引表
+- 由 ISBN 为依据的指向数据的索引表
 
-- 由书名为依据的指向数据字典序最小书目的索引表
+- 由书名为依据的索引表
 
-- 由作者为依据的指向数据字典序最小书目的索引表
+- 由作者为依据的索引表
 
-- 由关键词为依据的指向数据字典序最小书目的索引表
+- 由关键词为依据的索引表
+
+
+
+#### 日志储存
+
+- 储存日志文件
 
 
 
@@ -223,14 +225,17 @@
 
 5. **书名-图书索引表**（以 `Book-Name` 进行字典序排序的块状链表）
    - `Book-Name`
+   - `ISBN`
    - `Pointer-to-Book-Data`
 
 6. **作者-图书索引表**（以 `Author` 进行字典序排序的块状链表）
    - `Author`
+   - `ISBN`
    - `Pointer-to-Book-Data`
 
 7. **关键词-图书索引表** （以 `Keyword` 进行字典序排序的块状链表）
    - `Keyword`
+   - `ISBN`
    - `Pionter-to-Book-Data`
 
 8. **日志表**
@@ -257,6 +262,7 @@
 - `int main();`
   - `AccountManagement accounts;` 
   -  `BookManagement books;`
+  - `LogManagement logs;`
   - 接下来是一个 `while (ture) {} catch (int) {}` 循环，内部调用 `void processLine();` 函数。
 
 ### token_scanner.h & token_scanner.cpp
@@ -319,7 +325,7 @@ private:
 public:
   User();
 
-  User(std::string data);
+  User(const std::string& data);
 
   User(const std::string& ID, const std::string& name, const std::string& password, int priority);
   
@@ -339,28 +345,28 @@ private:
 
   fstream _account_data("user_data"); // 用于储存所有数据的文件
 
-  UnrolledLinkedList<user_id_map, UserID, int, long long> _user_id_map; // int 是凑位的
+  UnrolledLinkedList<user_id_map, UserID, int, int> _user_id_map; // 第一个 int 忽略即可，填入时用 0 就行
 
   // Other private variables ...
   
 public:
-  AccountManagement();
+  AccountManagement(); // 注意检查是否有用户名为 root，密码为 sjtu，权限为 {7} 的超级管理员账户，如没有，则添加该用户
 
-  void SwitchUser(); // su command
+  void switchUser(TokenScanner& line); // su command
 
-  void LogOut(); // logout command
+  void logOut(TokenScanner& line); // logout command
 
-  void Register(TokenScanner& line); // register command
+  void registerUser(TokenScanner& line); // register command
 
-  void ChangePassword(TokenScanner& line); // passwd command
+  void changePassword(TokenScanner& line); // passwd command
 
-  void AddUser(TokenScanner& line, LogManagement& logs); // useradd command
+  void addUser(TokenScanner& line, LogManagement& logs); // useradd command
 
-  void RemoveUser(TokenScanner& line, LogManagement& logs); // delete command
+  void removeUser(TokenScanner& line, LogManagement& logs); // delete command
   
-  void UserSelect(int book_id); // 对于当前用户选中对象
+  void userSelect(int book_id); // 对于当前用户选中对象
 
-  [[nodiscard]] int getCurrentPriority();
+  [[nodiscard]] int getCurrentPriority() const;
 };
 ```
 
@@ -371,6 +377,7 @@ public:
 ```CPP
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 #include "token_scanner.h"
 #include "unrolled_linked_list.h"
@@ -428,11 +435,12 @@ private:
 
 public:
   int book_ID;
+
   Book();
 
   Book(int id, const std::string& isbn, const std::string& bookName, const std::string& author, const std::string& keyword, int quantity, double price, double _total_cost); // 这样方便构造，但注意 keyword 需要以升序重新排列
 
-  Book(int id, const std::string& isbn);
+  Book(int id, const std::string& isbn); // 将除 ISBN 以外的部分全部为空字符串或 0
 
 
 
@@ -443,11 +451,13 @@ class BookManagement {
 private:
   fstream _book_data("book_data"); // 用于储存所有数据的文件
 
-  UnrolledLinkedList<book_name_index, BookName, ISBN, long long> _book_name_index;
+  UnrolledLinkedList<book_name_index, ISBN, int, int> _isbn_map; // 第一个 int 忽略即可，填入时用 0 就行
 
-  UnrolledLinkedList<author_map_index, Author, ISBN, long long> _author_map_index;
+  UnrolledLinkedList<book_name_index, BookName, ISBN, int> _book_name_index;
 
-  DoubleUnrolledLinkedList<keyword_index, Keyword, ISBN, long long> _keyword_index;
+  UnrolledLinkedList<author_map_index, Author, ISBN, int> _author_map_index;
+
+  UnrolledLinkedList<keyword_index, Keyword, ISBN, int> _keyword_index;
 
   // Other private variables ...
 
@@ -464,7 +474,7 @@ public:
 
   void modify(TokenScanner& line, AccountManagement& accounts, LogManagement& logs); // 检查是否有权限
 
-  void import(TokenScanner& line, AccountManagement& accounts, LogManagement& logs); // 检查是否有权限
+  void importBook(TokenScanner& line, AccountManagement& accounts, LogManagement& logs); // 检查是否有权限
 };
 ```
 
@@ -477,7 +487,7 @@ public:
 template<std::string _file_name, typename _key_type, typename _subkey_type, typename _value_type>
 class UnrolledLinkedList {
 private:
-  fstream _database("./data/" + _file_name);
+  fstream _database(_file_name);
 
   // ... other private contents
 
@@ -496,13 +506,11 @@ public:
 
   bool exist(const _key_type& key, const _subkey_type& subkey) const;
 
-  std::vector* traverse(); // 此函数返回一个遍历所有值的有序数组，请用 new 新建 std::vector，并且 std::vector::reserve() 足够多的空间减少浪费，调用该函数需要最后 delete 此指针（使用指针是为了减少不必要的复制）
+  std::vector<_value_type>* traverse(); // 此函数返回一个遍历所有值的有序数组，请用 new 新建 std::vector，并且 std::vector::reserve() 足够多的空间减少浪费，调用该函数需要最后 delete 此指针（使用指针是为了减少不必要的复制）
 
-  std::vector* traverse(const _key_type& key); // 此函数返回一个遍历所有值的有序数组，请用 new 新建 std::vector，并且 std::vector::reserve() 足够多的空间减少浪费，调用该函数需要最后 delete 此指针（使用指针是为了减少不必要的复制）
+  std::vector<_value_type>* traverse(const _key_type& key); // 此函数返回一个遍历所有值的有序数组，请用 new 新建 std::vector，并且 std::vector::reserve() 足够多的空间减少浪费，调用该函数需要最后 delete 此指针（使用指针是为了减少不必要的复制）
 
   [[nodiscard]] _value_type get(const _key_type& key, const _subkey_type& subkey) const;
-
-  void print(const _key_type& key);
 };
 ```
 
@@ -514,7 +522,7 @@ public:
 
 #include "accounts.h"
 
-enum Behavior {AddUser, Delete, Show, Buy, Select, Modify, Import}
+enum Behavior {AddUser, Delete, Show, Buy, Select, Modify, Import};
 struct Log {
   User user;
   enum behavior;
@@ -526,16 +534,18 @@ struct Log {
 class LogManagement {
 private:
   fstream _log_data("log");
-  int _count; // 交易笔数
+  int _count = 0; // 交易笔数
 
 public:
+  LogManagement();
+
   void report(TokenScanner& line, AccountManagement& accounts);
 
   void addLog(log& Log); // 把 log 放进文件的同时还需要检查是否有交易
 
   void showFinance(int Limit = -1); // 若为 -1，则显示全部
 
-  void log();
+  void log(TokenScanner& line); // log command，检查有无额外的 token
 };
 ```
 
