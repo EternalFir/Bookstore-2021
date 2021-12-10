@@ -14,16 +14,19 @@ const int MAX_NUM_PER_BLOCK = 1000;
 template<typename _key_type, typename _value_type>
 class Unrolled_linklist_single {
 private:
+    struct key_value_pair {// 封装的最小存储单元
+        _key_type key;
+        _value_type value;
+    };
+
+
     class Block {
     private:
-        struct key_value_pair {// 封装的最小存储单元
-            _key_type key;
-            _value_type value;
-        };
 
     public:
-        key_value_pair first_one;
-        key_value_pair last_one;
+        key_value_pair value[1010];
+//        key_value_pair first_one;
+//        key_value_pair last_one;
 
         Block() {
             next_num = -1,
@@ -31,12 +34,19 @@ private:
             elements_num = 0;
         }
 
-        const int head_preserved = sizeof(int) * 3 + 10;
-        const int sizeof_block = MAX_NUM_PER_BLOCK * sizeof(key_value_pair) + head_preserved;
-        int elements_num;
+        Block(int num){
+            next_num=-1;
+            prev_num=-1;
+            elements_num=0;
+            my_num=num;
+        }
+
+        int elements_num;// 1_based
         int next_num;
         int prev_num;
+        int my_num;// 为第几个块，0_based
     };
+
 
     std::fstream _index;
     std::string _index_name;
@@ -58,8 +68,22 @@ public:
         _index.close();
     }
 
-    void copy_block() {
-
+    void copy_block(int new_num, int old_num,int start) {// 从下标为start开始复制到新块中
+        _index.open(_index_name);
+        Block temp_old;
+        Block temp_new(new_num);
+        _index.seekg(head_preserved+old_num* sizeof(Block)+1);
+        _index.read(reinterpret_cast<char*>(&temp_old), sizeof(Block));
+        for(int i=0;i<=temp_old.elements_num-start;++i){
+            temp_new.value[i]=temp_old.value[i+start];
+        }
+        temp_new.elements_num=temp_old.elements_num-start;
+        temp_old.elements_num=start;
+        _index.seekp(head_preserved+old_num* sizeof(Block)+1);
+        _index.write(reinterpret_cast<char*>(&temp_old), sizeof(Block));
+        _index.seekp(head_preserved+new_num* sizeof(Block)+1);
+        _index.write(reinterpret_cast<char*>(&temp_new), sizeof(Block));
+        // 记得改num
     }
 
 };
