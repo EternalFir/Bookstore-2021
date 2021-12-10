@@ -52,9 +52,9 @@ private:
     std::string _index_name;
 
     const unsigned int head_preserved = sizeof(int) * 3 + 100;
-    int head = head_preserved + 1;
-    int tail = head_preserved + 1;
-    int block_num = 0;
+    int head = head_preserved;
+    int tail = head_preserved;
+    int block_num ;
 
 public:
     Unrolled_linklist_single(std::string in) {
@@ -62,11 +62,26 @@ public:
         _index.open(_index_name);
         if (!_index) {
             _index.open(_index_name, std::ostream::out);
+            head = head_preserved + 1;
+            tail = head_preserved + 1;
+            block_num = 0;
         } else {
             _index.seekg(0);
+            _index.read(reinterpret_cast<char*>(&head), sizeof(int));
+            _index.read(reinterpret_cast<char*>(&tail), sizeof(int));
+            _index.read(reinterpret_cast<char*>(&block_num), sizeof(int));
         }
         _index.close();
     }
+
+    ~Unrolled_linklist_single(){
+        _index.open(_index_name);
+        _index.seekp(0);
+        _index.write(reinterpret_cast<char*>(&head), sizeof(int));
+        _index.write(reinterpret_cast<char*>(&tail), sizeof(int));
+        _index.write(reinterpret_cast<char*>(&block_num), sizeof(int));
+    }
+    void divide_block()
 
     void copy_block(int new_num, int old_num,int start) {// 从下标为start开始复制到新块中
         _index.open(_index_name);
@@ -83,9 +98,8 @@ public:
         _index.write(reinterpret_cast<char*>(&temp_old), sizeof(Block));
         _index.seekp(head_preserved+new_num* sizeof(Block)+1);
         _index.write(reinterpret_cast<char*>(&temp_new), sizeof(Block));
-        // 记得改num
+        _index.close();
     }
-
 };
 
 #endif //BOOKSTORE_2021_UNROLLED_LINKLIST_H
