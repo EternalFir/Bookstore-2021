@@ -90,7 +90,7 @@ private:
     std::fstream _index;
     std::string _index_name;
 
-    const unsigned int head_preserved = sizeof(int) * 3 + 100;
+    const unsigned int head_preserved = sizeof(int) * 3 + 10;
     int head_num;// 0_based
     int tail_num;
     int block_num;// 已经使用过的块数目
@@ -104,7 +104,7 @@ public:
             _index.open(_index_name, std::ostream::out);
             head_num = 0;
             tail_num = 0;
-            block_num = 0;
+            block_num = 1;
         } else {
             _index.seekg(0);
             _index.read(reinterpret_cast<char *>(&head_num), sizeof(int));
@@ -129,27 +129,6 @@ public:
 // 先顺序查找到要插入的块
         Block search_block = find_block(in);
         int search_block_num = search_block.my_num;
-
-//        bool if_find_block = false;
-//        search_block_num = head_num;
-//        _index.seekg(head_preserved + sizeof(Block) * head_num);
-//        _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
-//        if (in.key < search_block.next_min)
-//            if_find_block = true;
-//        while (search_block_num != tail_num && !if_find_block) {
-//            search_block_num = search_block.next_num;
-//            _index.seekg(head_preserved + sizeof(Block) * search_block_num);
-//            _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
-//            if (search_block_num == tail_num) {
-//                if (in.key >= search_block.value[0].key) {
-//                    if_find_block = true;
-//                }
-//            } else {
-//                if (in.key >= search_block.value[0].key && in.key < search_block.next_min)
-//                    if_find_block = true;
-//            }
-//        }
-
 // 再二分找到块中要插入的位置
         int insert_place;
         bool if_find_place = false;
