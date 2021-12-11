@@ -18,6 +18,35 @@ private:
     struct key_value_pair {// 封装的最小存储单元
         _key_type key;
         _value_type value;
+
+        bool operator<(const key_value_pair &rhs) const {
+            if (key < rhs.key)
+                return true;
+            if (rhs.key < key)
+                return false;
+            return value < rhs.value;
+        }
+
+        bool operator>(const key_value_pair &rhs) const {
+            return rhs < *this;
+        }
+
+        bool operator<=(const key_value_pair &rhs) const {
+            return !(rhs < *this);
+        }
+
+        bool operator>=(const key_value_pair &rhs) const {
+            return !(*this < rhs);
+        }
+
+        bool operator==(const key_value_pair &rhs) const {
+            return key == rhs.key &&
+                   value == rhs.value;
+        }
+
+        bool operator!=(const key_value_pair &rhs) const {
+            return !(rhs == *this);
+        }
     };
 
 
@@ -94,8 +123,8 @@ public:
         in.value = value_in;
         in.key = key_in;
 // 先顺序查找到要插入的块
-        Block search_block= find_block(in);
-        int search_block_num=search_block.my_num;
+        Block search_block = find_block(in);
+        int search_block_num = search_block.my_num;
 
 //        bool if_find_block = false;
 //        search_block_num = head_num;
@@ -124,12 +153,12 @@ public:
         int r = search_block.elements_num - 1;
         while (l <= r && !if_find_place) {
             int mid = (l + r) / 2;
-            if (search_block.value[mid].key == in.key) {
+            if (search_block.value[mid]== in) {
                 insert_place = mid + 1;
                 if_find_place = true;
-            } else if (search_block.value[mid].key > in.key)
+            } else if (search_block.value[mid]> in)
                 r = mid - 1;
-            else if (search_block.value[mid].key < in.key)
+            else if (search_block.value[mid] < in)
                 l = mid + 1;
         }
         if (!if_find_place) {
@@ -158,6 +187,7 @@ public:
             divide_block(search_block_num);
         }
     }
+
 // 裂块函数
     void divide_block(int old_num) {
         _index.open(_index_name);
@@ -177,7 +207,7 @@ public:
         }
         _index.close();
 // 将原块的一半拷贝到新块上
-        copy_block(new_num,old_num,MAX_NUM_PER_BLOCK/2);
+        copy_block(new_num, old_num, MAX_NUM_PER_BLOCK / 2);
     }
 
     // 将旧块从下标为start开始复制到新块中
@@ -201,13 +231,13 @@ public:
         _index.close();
     }
 
-    void delete_ (_key_type key_in, _value_type value_in){
+    void delete_(_key_type key_in, _value_type value_in) {
         key_value_pair in;
-        in.key=key_in;
-        in.value=value_in;
+        in.key = key_in;
+        in.value = value_in;
 // 先顺序查找到要删除的块
-        Block search_block= find_block(in);
-        int search_block_num=search_block.my_num;
+        Block search_block = find_block(in);
+        int search_block_num = search_block.my_num;
 // 再二分查找到要删除的位置
         int delete_place;
         bool if_find_place = false;
@@ -215,12 +245,12 @@ public:
         int r = search_block.elements_num - 1;
         while (l <= r && !if_find_place) {
             int mid = (l + r) / 2;
-            if (search_block.value[mid].key == in.key) {
+            if (search_block.value[mid] == in) {
                 delete_place = mid;
                 if_find_place = true;
-            } else if (search_block.value[mid].key > in.key)
+            } else if (search_block.value[mid] > in)
                 r = mid - 1;
-            else if (search_block.value[mid].key < in.key)
+            else if (search_block.value[mid] < in)
                 l = mid + 1;
         }
         if (!if_find_place) {
@@ -228,18 +258,18 @@ public:
         }
 // 执行删除操作
         search_block.elements_num--;
-        for (int i=delete_place;i<search_block_num;i++) {
-            search_block.value[i]=search_block.value[i+1];
+        for (int i = delete_place; i < search_block_num; i++) {
+            search_block.value[i] = search_block.value[i + 1];
         }
         _index.open(_index_name);
-        _index.seekp(head_preserved+ sizeof(Block)*search_block_num);
-        _index.write(reinterpret_cast<char*>(&search_block), sizeof(Block));
+        _index.seekp(head_preserved + sizeof(Block) * search_block_num);
+        _index.write(reinterpret_cast<char *>(&search_block), sizeof(Block));
         _index.close();
 // 检查是否需要并块
         // TODO:
     }
 
-    Block find_block(key_value_pair in){
+    Block find_block(key_value_pair in) {
         _index.open(_index_name);
         Block search_block;
         int search_block_num;
@@ -247,18 +277,18 @@ public:
         search_block_num = head_num;
         _index.seekg(head_preserved + sizeof(Block) * head_num);
         _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
-        if (in.key < search_block.next_min)
+        if (in < search_block.next_min)
             if_find_block = true;
         while (search_block_num != tail_num && !if_find_block) {
             search_block_num = search_block.next_num;
             _index.seekg(head_preserved + sizeof(Block) * search_block_num);
             _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
             if (search_block_num == tail_num) {
-                if (in.key >= search_block.value[0].key) {
+                if (in >= search_block.value[0]) {
                     if_find_block = true;
                 }
             } else {
-                if (in.key >= search_block.value[0].key && in.key < search_block.next_min)
+                if (in >= search_block.value[0]&& in < search_block.next_min)
                     if_find_block = true;
             }
         }
