@@ -9,13 +9,13 @@
 
 #ifndef BOOKSTORE_2021_UNROLLED_LINKLIST_H
 #define BOOKSTORE_2021_UNROLLED_LINKLIST_H
-const int MAX_NUM_PER_BLOCK = 1000;
+const int MAX_NUM_PER_BLOCK = 100;
 
 
 // 单键版本的块链
 template<typename _key_type, typename _value_type>
 class Unrolled_linklist_single {
-private:
+public:
     struct key_value_pair {// 封装的最小存储单元
         _key_type key;
         _value_type value;
@@ -49,6 +49,8 @@ private:
             return !(rhs == *this);
         }
     };
+
+private:
 
 
     class Block {
@@ -94,6 +96,7 @@ private:
     int block_num;// 已经使用过的块数目
 
 public:
+
     Unrolled_linklist_single(std::string in) {
         _index_name = in;
         _index.open(_index_name);
@@ -298,10 +301,8 @@ public:
     }
 
 // 先写成块内遍历的版本
-
-    std::vector<key_value_pair> traverse(_key_type in_key) {
-        std::vector<key_value_pair> ans;
-        ans.clear();
+// TODO当前特为T1评测的输出版本
+    void traverse(std::vector<key_value_pair> ans, _key_type in_key) {
         _index.open(_index_name);
         Block search_block;
         int search_block_num;
@@ -318,7 +319,7 @@ public:
                 traverse_block(ans, search_block, in_key);
         }
         _index.close();
-        return ans;
+        return;
     }
 
     void traverse_block(std::vector<key_value_pair> ans, const Block &search_block, _key_type in_key) {
