@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <filesystem>
+#include <vector>
 
 #ifndef BOOKSTORE_2021_UNROLLED_LINKLIST_H
 #define BOOKSTORE_2021_UNROLLED_LINKLIST_H
@@ -153,10 +154,10 @@ public:
         int r = search_block.elements_num - 1;
         while (l <= r && !if_find_place) {
             int mid = (l + r) / 2;
-            if (search_block.value[mid]== in) {
+            if (search_block.value[mid] == in) {
                 insert_place = mid + 1;
                 if_find_place = true;
-            } else if (search_block.value[mid]> in)
+            } else if (search_block.value[mid] > in)
                 r = mid - 1;
             else if (search_block.value[mid] < in)
                 l = mid + 1;
@@ -288,12 +289,43 @@ public:
                     if_find_block = true;
                 }
             } else {
-                if (in >= search_block.value[0]&& in < search_block.next_min)
+                if (in >= search_block.value[0] && in < search_block.next_min)
                     if_find_block = true;
             }
         }
         _index.close();
         return search_block;
+    }
+
+// 先写成块内遍历的版本
+
+    std::vector<key_value_pair> traverse(_key_type in_key) {
+        std::vector<key_value_pair> ans;
+        ans.clear();
+        _index.open(_index_name);
+        Block search_block;
+        int search_block_num;
+        search_block_num = head_num;
+        _index.seekg(head_preserved + sizeof(Block) * search_block_num);
+        _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
+        if (search_block.value[0].key <= in_key && search_block.next_min.key >= in_key)
+            traverse_block(ans, search_block, in_key);
+        while (search_block_num != tail_num) {
+            search_block_num = search_block.next_num;
+            _index.seekg(head_preserved + sizeof(Block) * search_block_num);
+            _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
+            if (search_block.value[0].key <= in_key && search_block.next_min.key >= in_key)
+                traverse_block(ans, search_block, in_key);
+        }
+        _index.close();
+        return ans;
+    }
+
+    void traverse_block(std::vector<key_value_pair> ans, const Block &search_block, _key_type in_key) {
+        for (int i = 0; i < search_block.elements_num; i++) {
+            if (search_block.value[i].key == in_key)
+                ans.push_back(search_block.value[i]);
+        }
     }
 };
 
