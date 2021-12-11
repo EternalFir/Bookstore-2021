@@ -82,7 +82,7 @@ private:
         int elements_num;// 1_based
         int next_num;
         int prev_num;
-        int my_num;// 为第几个块，0_based
+        int my_num = 0;// 为第几个块，0_based
         key_value_pair next_min;// 后一个块中的最小值
     };
 
@@ -90,7 +90,7 @@ private:
     std::fstream _index;
     std::string _index_name;
 
-    const unsigned int head_preserved = sizeof(int) * 3 + 10;
+    const unsigned int head_preserved = sizeof(int) * 3 + 2 * sizeof(Block) + 10;// 这个的存储是否会出问题？
     int head_num;// 0_based
     int tail_num;
     int block_num;// 已经使用过的块数目
@@ -102,8 +102,17 @@ public:
         _index.open(_index_name);
         if (!_index) {
             _index.open(_index_name, std::ostream::out);
-            head_num = 0;
-            tail_num = 0;
+            head_num = -1;
+            tail_num = -1;
+            Block head(head_num);
+            Block tail(tail_num);
+            Block f(0);
+            _index.seekp(head_preserved + head_num * sizeof(Block));
+            _index.write(reinterpret_cast<char *>(&head), sizeof(Block));
+            _index.seekp(head_preserved + tail_num * sizeof(Block));
+            _index.write(reinterpret_cast<char *>(&tail), sizeof(Block));
+            _index.seekp(head_preserved);
+            _index.write(reinterpret_cast<char *>(&f), sizeof(Block));
             block_num = 1;
         } else {
             _index.seekg(0);
@@ -176,8 +185,8 @@ public:
         _index.open(_index_name);
         _index.seekg(head_preserved + 1);
         int new_num = -1;
-        Block temp;
         for (int i = 0; i < block_num; ++i) {
+            Block temp;
             _index.read(reinterpret_cast<char *>(&temp), sizeof(Block));
             if (!temp.if_occupied) {
                 new_num = i;
@@ -188,6 +197,23 @@ public:
             new_num = block_num;
             block_num++;
         }
+        Block new_block(new_num);// 插入新块
+        Block next_block;
+        Block old_block;
+        _index.seekg(head_preserved + sizeof(Block) * old_num);
+        _index.read(reinterpret_cast<char *>(&old_block), sizeof(Block));
+        _index.seekg(head_preserved + sizeof(Block) * old_block.next_num);
+        _index.read(reinterpret_cast<char *>(&next_block), sizeof(Block));
+        new_block.prev_num = old_block.my_num;
+        new_block.next_num = next_block.my_num;
+        old_block.next_num = new_block.my_num;
+        next_block.prev_num = new_block.my_num;
+        _index.seekp(head_preserved + sizeof(Block) * old_block.my_num);
+        _index.write(reinterpret_cast<char *>(&old_block), sizeof(Block));
+        _index.seekp(head_preserved + sizeof(Block) * new_block.my_num);
+        _index.write(reinterpret_cast<char *>(&new_block), sizeof(Block));
+        _index.seekp(head_preserved + sizeof(Block) * next_block.my_num);
+        _index.write(reinterpret_cast<char *>(&next_block), sizeof(Block));
         _index.close();
 // 将原块的一半拷贝到新块上
         copy_block(new_num, old_num, MAX_NUM_PER_BLOCK / 2);
@@ -260,21 +286,33 @@ public:
         search_block_num = head_num;
         _index.seekg(head_preserved + sizeof(Block) * head_num);
         _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
-        if (in < search_block.next_min)
-            if_find_block = true;
-        while (search_block_num != tail_num && !if_find_block) {
-            search_block_num = search_block.next_num;
+        search_block_num = search_block.next_num;
+        while (search_block_num != tail_num) {
             _index.seekg(head_preserved + sizeof(Block) * search_block_num);
             _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
-            if (search_block_num == tail_num) {
-                if (in >= search_block.value[0]) {
-                    if_find_block = true;
-                }
-            } else {
-                if (in >= search_block.value[0] && in < search_block.next_min)
-                    if_find_block = true;
-            }
+            if (search_block.next_min > in)
+                break;
+            search_block_num = search_block.next_num;
         }
+//        _index.seekg(head_preserved + sizeof(Block) * head_num);
+//        _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
+//        if (in < search_block.next_min && tail_num != head_num)
+//            if_find_block = true;
+//        if (head_num == tail_num)
+//            if_find_block = true;
+//        while (search_block_num != tail_num && !if_find_block) {
+//            search_block_num = search_block.next_num;
+//            _index.seekg(head_preserved + sizeof(Block) * search_block_num);
+//            _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
+//            if (search_block_num == tail_num) {
+//                if (in >= search_block.value[0]) {
+//                    if_find_block = true;
+//                }
+//            } else {
+//                if (in >= search_block.value[0] && in < search_block.next_min)
+//                    if_find_block = true;
+//            }
+//        }
         _index.close();
         return search_block;
     }
