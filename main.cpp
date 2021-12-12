@@ -57,13 +57,14 @@ int main() {
             store.delete_(index,value);
         } else if(order=="find"){
             std::cin>>index.value;
-            std::vector<Unrolled_linklist_single<Char,int>::key_value_pair> out;
+            std::vector<int> out;
             store.traverse(out,index);
             if(out.size()==0)
+
                 std::cout<<"null";
             else{
                 for (int j = 0; j < out.size(); ++j) {
-                    std::cout<<out[i].value<<' ';
+                    std::cout<<out[j]<<' ';
                 }
             }
             std::cout<<std::endl;
