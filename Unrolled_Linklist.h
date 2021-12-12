@@ -103,10 +103,14 @@ public:
         if (!_index) {
             _index.open(_index_name, std::ostream::out);
             head_num = -1;
-            tail_num = -1;
+            tail_num = -2;
             Block head(head_num);
+            head.next_num=0;
             Block tail(tail_num);
+            tail.prev_num=0;
             Block f(0);
+            f.prev_num=-1;
+            f.next_num=-2;
             _index.seekp(head_preserved + head_num * sizeof(Block));
             _index.write(reinterpret_cast<char *>(&head), sizeof(Block));
             _index.seekp(head_preserved + tail_num * sizeof(Block));
@@ -158,6 +162,7 @@ public:
         }
 // 执行插入操作
         search_block.elements_num++;
+//        std::cerr<<search_block.elements_num<< std::endl;
         for (int i = search_block.elements_num; i > insert_place; i--) {
             search_block.value[i] = search_block.value[i - 1];
         }
@@ -267,7 +272,7 @@ public:
         }
 // 执行删除操作
         search_block.elements_num--;
-        for (int i = delete_place; i < search_block_num; i++) {
+        for (int i = delete_place; i < search_block.elements_num; i++) {
             search_block.value[i] = search_block.value[i + 1];
         }
         _index.open(_index_name);
@@ -319,30 +324,31 @@ public:
 
 // 先写成块内遍历的版本
 // TODO当前特为T1评测的输出版本
-    void traverse(std::vector<key_value_pair> ans, _key_type in_key) {
+    void traverse(std::vector<_value_type> &ans, _key_type in_key) {
         _index.open(_index_name);
         Block search_block;
         int search_block_num;
         search_block_num = head_num;
         _index.seekg(head_preserved + sizeof(Block) * search_block_num);
         _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
-        if (search_block.value[0].key <= in_key && search_block.next_min.key >= in_key)
-            traverse_block(ans, search_block, in_key);
+        search_block_num=search_block.next_num;
+//        if (search_block.value[0].key <= in_key && search_block.next_min.key >= in_key)
+//            traverse_block(ans, search_block, in_key);
         while (search_block_num != tail_num) {
-            search_block_num = search_block.next_num;
             _index.seekg(head_preserved + sizeof(Block) * search_block_num);
             _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
             if (search_block.value[0].key <= in_key && search_block.next_min.key >= in_key)
                 traverse_block(ans, search_block, in_key);
+            search_block_num = search_block.next_num;
         }
         _index.close();
         return;
     }
 
-    void traverse_block(std::vector<key_value_pair> ans, const Block &search_block, _key_type in_key) {
+    void traverse_block(std::vector<_value_type> &ans, const Block &search_block, _key_type in_key) {
         for (int i = 0; i < search_block.elements_num; i++) {
             if (search_block.value[i].key == in_key)
-                ans.push_back(search_block.value[i]);
+                ans.push_back(search_block.value[i].value);
         }
     }
 };
