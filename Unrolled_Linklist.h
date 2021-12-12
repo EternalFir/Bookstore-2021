@@ -105,12 +105,12 @@ public:
             head_num = -1;
             tail_num = -2;
             Block head(head_num);
-            head.next_num=0;
+            head.next_num = 0;
             Block tail(tail_num);
-            tail.prev_num=0;
+            tail.prev_num = 0;
             Block f(0);
-            f.prev_num=-1;
-            f.next_num=-2;
+            f.prev_num = -1;
+            f.next_num = -2;
             _index.seekp(head_preserved + head_num * sizeof(Block));
             _index.write(reinterpret_cast<char *>(&head), sizeof(Block));
             _index.seekp(head_preserved + tail_num * sizeof(Block));
@@ -331,7 +331,7 @@ public:
         search_block_num = head_num;
         _index.seekg(head_preserved + sizeof(Block) * search_block_num);
         _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
-        search_block_num=search_block.next_num;
+        search_block_num = search_block.next_num;
 //        if (search_block.value[0].key <= in_key && search_block.next_min.key >= in_key)
 //            traverse_block(ans, search_block, in_key);
         while (search_block_num != tail_num) {
@@ -346,10 +346,32 @@ public:
     }
 
     void traverse_block(std::vector<_value_type> &ans, const Block &search_block, _key_type in_key) {
-        for (int i = 0; i < search_block.elements_num; i++) {
-            if (search_block.value[i].key == in_key)
-                ans.push_back(search_block.value[i].value);
+        int start,end;
+        int l = 0;
+        int r = search_block.elements_num - 1;
+        int mid;
+        while (l <= r) {
+            mid=l+((r-l)>>1);
+            if(in_key<=search_block.value[mid].key)
+                r=mid-1;
+            else
+                l=mid+1;
         }
+        start=l;
+        l=0;
+        r=search_block.elements_num-1;
+        while (l<=r){
+            mid=l+((r-l)>>1);
+            if(in_key<search_block.value[mid].key)
+                r=mid-1;
+            else
+                l=mid+1;
+        }
+        end=--l;
+        for (int i = start; i <=end ; ++i) {
+            ans.push_back(search_block.value[i].value);
+        }
+        return;
     }
 };
 
