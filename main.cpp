@@ -43,7 +43,7 @@ int main() {
     int value;
     std::string order;
     std::cin >> n;
-    Unrolled_linklist_single<Char, int> store("storage");
+    Unrolled_linklist<Char, int> store("storage");
     for (int i = 0; i < n; i++) {
         std::cin >> order;
         if (order == "insert") {
