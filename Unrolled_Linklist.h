@@ -9,12 +9,12 @@
 
 #ifndef BOOKSTORE_2021_UNROLLED_LINKLIST_H
 #define BOOKSTORE_2021_UNROLLED_LINKLIST_H
-const int MAX_NUM_PER_BLOCK = 100;
+const int MAX_NUM_PER_BLOCK = 1000;
 
 
-// 单键版本的块链
+
 template<typename _key_type, typename _value_type>
-class Unrolled_linklist_single {
+class Unrolled_linklist {
 public:
     struct key_value_pair {// 封装的最小存储单元
         _key_type key;
@@ -97,7 +97,7 @@ private:
 
 public:
 
-    Unrolled_linklist_single(std::string in) {
+    Unrolled_linklist(std::string in) {
         _index_name = in;
         _index.open(_index_name);
         if (!_index) {
@@ -118,21 +118,24 @@ public:
             _index.seekp(head_preserved);
             _index.write(reinterpret_cast<char *>(&f), sizeof(Block));
             block_num = 1;
+            _index.close();
+            _index.open(_index_name);
         } else {
             _index.seekg(0);
             _index.read(reinterpret_cast<char *>(&head_num), sizeof(int));
             _index.read(reinterpret_cast<char *>(&tail_num), sizeof(int));
             _index.read(reinterpret_cast<char *>(&block_num), sizeof(int));
         }
-        _index.close();
+//        _index.close();
     }
 
-    ~Unrolled_linklist_single() {
-        _index.open(_index_name);
+    ~Unrolled_linklist() {
+//        _index.open(_index_name);
         _index.seekp(0);
         _index.write(reinterpret_cast<char *>(&head_num), sizeof(int));
         _index.write(reinterpret_cast<char *>(&tail_num), sizeof(int));
         _index.write(reinterpret_cast<char *>(&block_num), sizeof(int));
+        _index.close();
     }
 
     void insert(_key_type key_in, _value_type value_in) {
@@ -167,7 +170,7 @@ public:
             search_block.value[i] = search_block.value[i - 1];
         }
         search_block.value[insert_place] = in;
-        _index.open(_index_name);
+//        _index.open(_index_name);
         if (insert_place == 0) {
             Block temp;
             _index.seekg(head_preserved + sizeof(Block) * (search_block_num - 1));
@@ -178,7 +181,7 @@ public:
         }
         _index.seekp(head_preserved + sizeof(Block) * search_block_num);
         _index.write(reinterpret_cast<char *>(&search_block), sizeof(Block));
-        _index.close();
+//        _index.close();
 // 再检查是否要裂块
         if (search_block.elements_num > MAX_NUM_PER_BLOCK) {
             divide_block(search_block_num);
@@ -187,7 +190,7 @@ public:
 
 // 裂块函数
     void divide_block(int old_num) {
-        _index.open(_index_name);
+//        _index.open(_index_name);
         _index.seekg(head_preserved + 1);
         int new_num = -1;
         for (int i = 0; i < block_num; ++i) {
@@ -219,14 +222,14 @@ public:
         _index.write(reinterpret_cast<char *>(&new_block), sizeof(Block));
         _index.seekp(head_preserved + sizeof(Block) * next_block.my_num);
         _index.write(reinterpret_cast<char *>(&next_block), sizeof(Block));
-        _index.close();
+//        _index.close();
 // 将原块的一半拷贝到新块上
         copy_block(new_num, old_num, MAX_NUM_PER_BLOCK / 2);
     }
 
     // 将旧块从下标为start开始复制到新块中
     void copy_block(int new_num, int old_num, int start) {
-        _index.open(_index_name);
+//        _index.open(_index_name);
         Block temp_old;
         Block temp_new(new_num);
         _index.seekg(head_preserved + old_num * sizeof(Block) + 1);
@@ -242,7 +245,7 @@ public:
         _index.write(reinterpret_cast<char *>(&temp_old), sizeof(Block));
         _index.seekp(head_preserved + new_num * sizeof(Block) + 1);
         _index.write(reinterpret_cast<char *>(&temp_new), sizeof(Block));
-        _index.close();
+//        _index.close();
     }
 
     void delete_(_key_type key_in, _value_type value_in) {
@@ -275,16 +278,18 @@ public:
         for (int i = delete_place; i < search_block.elements_num; i++) {
             search_block.value[i] = search_block.value[i + 1];
         }
-        _index.open(_index_name);
+//        _index.open(_index_name);
         _index.seekp(head_preserved + sizeof(Block) * search_block_num);
         _index.write(reinterpret_cast<char *>(&search_block), sizeof(Block));
-        _index.close();
+//        _index.close();
 // 检查是否需要并块
         // TODO:
     }
 
     Block find_block(key_value_pair in) {
-        _index.open(_index_name);
+
+//        _index.open(_index_name);
+
         Block search_block;
         int search_block_num;
         bool if_find_block = false;
@@ -318,14 +323,15 @@ public:
 //                    if_find_block = true;
 //            }
 //        }
-        _index.close();
+
+//        _index.close();
         return search_block;
     }
 
 // 先写成块内遍历的版本
 // TODO当前特为T1评测的输出版本
     void traverse(std::vector<_value_type> &ans, _key_type in_key) {
-        _index.open(_index_name);
+//        _index.open(_index_name);
         Block search_block;
         int search_block_num;
         search_block_num = head_num;
@@ -341,34 +347,34 @@ public:
                 traverse_block(ans, search_block, in_key);
             search_block_num = search_block.next_num;
         }
-        _index.close();
+//        _index.close();
         return;
     }
 
     void traverse_block(std::vector<_value_type> &ans, const Block &search_block, _key_type in_key) {
-        int start,end;
+        int start, end;
         int l = 0;
         int r = search_block.elements_num - 1;
         int mid;
         while (l <= r) {
-            mid=l+((r-l)>>1);
-            if(in_key<=search_block.value[mid].key)
-                r=mid-1;
+            mid = l + ((r - l) >> 1);
+            if (in_key <= search_block.value[mid].key)
+                r = mid - 1;
             else
-                l=mid+1;
+                l = mid + 1;
         }
-        start=l;
-        l=0;
-        r=search_block.elements_num-1;
-        while (l<=r){
-            mid=l+((r-l)>>1);
-            if(in_key<search_block.value[mid].key)
-                r=mid-1;
+        start = l;
+        l = 0;
+        r = search_block.elements_num - 1;
+        while (l <= r) {
+            mid = l + ((r - l) >> 1);
+            if (in_key < search_block.value[mid].key)
+                r = mid - 1;
             else
-                l=mid+1;
+                l = mid + 1;
         }
-        end=--l;
-        for (int i = start; i <=end ; ++i) {
+        end = --l;
+        for (int i = start; i <= end; ++i) {
             ans.push_back(search_block.value[i].value);
         }
         return;
