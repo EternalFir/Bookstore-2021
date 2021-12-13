@@ -9,8 +9,7 @@
 
 #ifndef BOOKSTORE_2021_UNROLLED_LINKLIST_H
 #define BOOKSTORE_2021_UNROLLED_LINKLIST_H
-const int MAX_NUM_PER_BLOCK = 5000;
-
+const int MAX_NUM_PER_BLOCK =300;
 
 
 template<typename _key_type, typename _value_type>
@@ -57,7 +56,7 @@ private:
     private:
 
     public:
-        bool if_occupied;// 当前块是否已经使用
+//        bool if_occupied;// 当前块是否已经使用
 
         // 目前尚未实现并块操作
         // 可以用另一个单链表实现对释放的空间的管理
@@ -191,20 +190,24 @@ public:
 // 裂块函数
     void divide_block(int old_num) {
 //        _index.open(_index_name);
-        _index.seekg(head_preserved + 1);
+//        _index.seekg(head_preserved + 1);
         int new_num = -1;
-        for (int i = 0; i < block_num; ++i) {
-            Block temp;
-            _index.read(reinterpret_cast<char *>(&temp), sizeof(Block));
-            if (!temp.if_occupied) {
-                new_num = i;
-                break;
-            }
-        }
-        if (new_num == -1) {
-            new_num = block_num;
-            block_num++;
-        }
+
+//TODO: 与并块相匹配，外存回收
+//        for (int i = 0; i < block_num; ++i) {
+//            Block temp;
+//            _index.read(reinterpret_cast<char *>(&temp), sizeof(Block));
+//            if (!temp.if_occupied) {
+//                new_num = i;
+//                break;
+//            }
+//        }
+//        if (new_num == -1) {
+//            new_num = block_num;
+//            block_num++;
+//        }
+        new_num = block_num;
+        block_num++;
         Block new_block(new_num);// 插入新块
         Block next_block;
         Block old_block;
@@ -232,18 +235,20 @@ public:
 //        _index.open(_index_name);
         Block temp_old;
         Block temp_new(new_num);
-        _index.seekg(head_preserved + old_num * sizeof(Block) + 1);
+        _index.seekg(head_preserved + old_num * sizeof(Block) );
         _index.read(reinterpret_cast<char *>(&temp_old), sizeof(Block));
-        for (int i = 0; i <= temp_old.elements_num - start; ++i) {
+        _index.seekg(head_preserved+new_num* sizeof(Block));
+        _index.read(reinterpret_cast<char*>(&temp_new), sizeof(Block));
+        for (int i = 0; i < temp_old.elements_num - start; ++i) {
             temp_new.value[i] = temp_old.value[i + start];
         }
         temp_new.elements_num = temp_old.elements_num - start;
         temp_old.elements_num = start;
         temp_new.next_min = temp_old.next_min;
         temp_old.next_min = temp_new.value[0];
-        _index.seekp(head_preserved + old_num * sizeof(Block) + 1);
+        _index.seekp(head_preserved + old_num * sizeof(Block));
         _index.write(reinterpret_cast<char *>(&temp_old), sizeof(Block));
-        _index.seekp(head_preserved + new_num * sizeof(Block) + 1);
+        _index.seekp(head_preserved + new_num * sizeof(Block));
         _index.write(reinterpret_cast<char *>(&temp_new), sizeof(Block));
 //        _index.close();
     }
