@@ -1,40 +1,40 @@
 #include <iostream>
-#include "Unrolled_Linklist.h"
+#include "unrolled_linklist.h"
 #include <string>
 #include <cstring>
 #include <vector>
 #include <cstdio>
 struct Char{
-    char value[65];
+    char value_[65];
 
     bool operator==(const Char &rhs) const {
-        if(strcmp(value,rhs.value)==0)
+        if(strcmp(value_,rhs.value_)==0)
             return true;
         else
             return false;
     }
 
     bool operator!=(const Char &rhs) const {
-        if(strcmp(value,rhs.value)!=0)
+        if(strcmp(value_,rhs.value_)!=0)
             return true;
         else
             return false;
     }
 
     bool operator<(const Char &rhs) const {
-        return strcmp(value,rhs.value)<0;
+        return strcmp(value_,rhs.value_)<0;
     }
 
     bool operator>(const Char &rhs) const {
-        return strcmp(value,rhs.value)>0;
+        return strcmp(value_,rhs.value_)>0;
     }
 
     bool operator<=(const Char &rhs) const {
-        return strcmp(value,rhs.value)<=0;
+        return strcmp(value_,rhs.value_)<=0;
     }
 
     bool operator>=(const Char &rhs) const {
-        return strcmp(value,rhs.value)>=0;
+        return strcmp(value_,rhs.value_)>=0;
     }
 };
 
@@ -44,34 +44,27 @@ int main() {
 //    freopen("!output.txt","w",stdout);
 //#endif
     int n;
-
-    int roll_num=0;
-
     Char index;
     int value;
     std::string order;
     std::cin >> n;
-    Unrolled_linklist<Char, int> store("storage");
+    UnrolledLinklist<Char, int> store("storage");
     for (int i = 0; i < n; i++) {
         std::cin >> order;
         if (order == "insert") {
-            std::cin >> index.value;
+            std::cin >> index.value_;
             std::cin >> value;
-            store.insert(index, value);
+            store.Insert(index, value);
         }
         else if(order=="delete"){
-            std::cin>>index.value;
+            std::cin>>index.value_;
             std::cin>>value;
-            store.delete_(index,value);
+            store.Delete(index,value);
         } else if(order=="find"){
-            std::cin>>index.value;
-
-            roll_num++;
-
+            std::cin>>index.value_;
             std::vector<int> out;
-            store.traverse(out,index);
+            store.Traverse(out,index);
             if(out.size()==0)
-
                 std::cout<<"null";
             else{
                 for (int j = 0; j < out.size(); ++j) {

@@ -6,7 +6,21 @@
 
 #IncludeRegexTransform: 
 
-/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist.h
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/main.cpp
+iostream
+-
+unrolled_linklist.h
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/unrolled_linklist.h
+string
+-
+cstring
+-
+vector
+-
+cstdio
+-
+
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/unrolled_linklist.h
 iostream
 -
 fstream
@@ -16,19 +30,5 @@ string
 filesystem
 -
 vector
--
-
-/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/main.cpp
-iostream
--
-Unrolled_Linklist.h
-/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist.h
-string
--
-cstring
--
-vector
--
-cstdio
 -
 
