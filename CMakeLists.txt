@@ -3,4 +3,4 @@ project(Bookstore_2021)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(code main.cpp Unrolled_Linklist.h)
+add_executable(code main.cpp unrolled_linklist.h)
