@@ -3,6 +3,7 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <cstdio>
 struct Char{
     char value[65];
 
@@ -38,6 +39,10 @@ struct Char{
 };
 
 int main() {
+//#ifndef ONLINE_JUDGE
+//    freopen("test.in.txt","r",stdin);
+//    freopen("!output.txt","w",stdout);
+//#endif
     int n;
     Char index;
     int value;

@@ -9,7 +9,7 @@
 
 #ifndef BOOKSTORE_2021_UNROLLED_LINKLIST_H
 #define BOOKSTORE_2021_UNROLLED_LINKLIST_H
-const int MAX_NUM_PER_BLOCK =300;
+const int MAX_NUM_PER_BLOCK = 20;
 
 
 template<typename _key_type, typename _value_type>
@@ -235,10 +235,10 @@ public:
 //        _index.open(_index_name);
         Block temp_old;
         Block temp_new(new_num);
-        _index.seekg(head_preserved + old_num * sizeof(Block) );
+        _index.seekg(head_preserved + old_num * sizeof(Block));
         _index.read(reinterpret_cast<char *>(&temp_old), sizeof(Block));
-        _index.seekg(head_preserved+new_num* sizeof(Block));
-        _index.read(reinterpret_cast<char*>(&temp_new), sizeof(Block));
+        _index.seekg(head_preserved + new_num * sizeof(Block));
+        _index.read(reinterpret_cast<char *>(&temp_new), sizeof(Block));
         for (int i = 0; i < temp_old.elements_num - start; ++i) {
             temp_new.value[i] = temp_old.value[i + start];
         }
@@ -348,8 +348,14 @@ public:
         while (search_block_num != tail_num) {
             _index.seekg(head_preserved + sizeof(Block) * search_block_num);
             _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
-            if (search_block.value[0].key <= in_key && search_block.next_min.key >= in_key)
-                traverse_block(ans, search_block, in_key);
+            if (search_block.next_num != tail_num) {
+                if ((search_block.value[0].key <= in_key && search_block.next_min.key >= in_key) &&
+                    search_block.elements_num != 0)
+                    traverse_block(ans, search_block, in_key);
+            } else {
+                if (search_block.value[0].key <= in_key && search_block.elements_num != 0)
+                    traverse_block(ans, search_block, in_key);
+            }
             search_block_num = search_block.next_num;
         }
 //        _index.close();
