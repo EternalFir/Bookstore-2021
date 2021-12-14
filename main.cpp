@@ -40,10 +40,13 @@ struct Char{
 
 int main() {
 //#ifndef ONLINE_JUDGE
-//    freopen("test.in.txt","r",stdin);
+//    freopen("1.in","r",stdin);
 //    freopen("!output.txt","w",stdout);
 //#endif
     int n;
+
+    int roll_num=0;
+
     Char index;
     int value;
     std::string order;
@@ -62,6 +65,9 @@ int main() {
             store.delete_(index,value);
         } else if(order=="find"){
             std::cin>>index.value;
+
+            roll_num++;
+
             std::vector<int> out;
             store.traverse(out,index);
             if(out.size()==0)

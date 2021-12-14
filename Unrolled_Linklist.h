@@ -9,7 +9,7 @@
 
 #ifndef BOOKSTORE_2021_UNROLLED_LINKLIST_H
 #define BOOKSTORE_2021_UNROLLED_LINKLIST_H
-const int MAX_NUM_PER_BLOCK = 300;
+const int MAX_NUM_PER_BLOCK = 20;
 
 
 template<typename _key_type, typename _value_type>
@@ -142,7 +142,7 @@ public:
         in.value = value_in;
         in.key = key_in;
 // 先顺序查找到要插入的块
-        Block search_block = find_block(in);
+        Block search_block = find_block_insert(in);
         int search_block_num = search_block.my_num;
 // 再二分找到块中要插入的位置
         int insert_place;
@@ -253,12 +253,30 @@ public:
 //        _index.close();
     }
 
+    Block find_block_insert(key_value_pair in) {
+        Block search_block;
+        int search_block_num;
+        bool if_find_block = false;
+        search_block_num = head_num;
+        _index.seekg(head_preserved + sizeof(Block) * head_num);
+        _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
+        search_block_num = search_block.next_num;
+        while (search_block_num != tail_num) {
+            _index.seekg(head_preserved + sizeof(Block) * search_block_num);
+            _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
+            if (search_block.next_min > in)
+                break;
+            search_block_num = search_block.next_num;
+        }
+        return search_block;
+    }
+
     void delete_(_key_type key_in, _value_type value_in) {
         key_value_pair in;
         in.key = key_in;
         in.value = value_in;
 // 先顺序查找到要删除的块
-        Block search_block = find_block(in);
+        Block search_block = find_block_delete(in);
         int search_block_num = search_block.my_num;
 // 再二分查找到要删除的位置
         int delete_place;
@@ -277,12 +295,16 @@ public:
         }
         if (!if_find_place) {
             // TODO: 若查找不到，进行错误抛出
+//            std::cerr<<"error"<<std::endl;
         }
-// 执行删除操作
-        search_block.elements_num--;
-        for (int i = delete_place; i < search_block.elements_num; i++) {
-            search_block.value[i] = search_block.value[i + 1];
-        }
+// 若找到则执行删除操作
+if(if_find_place){
+    search_block.elements_num--;
+    for (int i = delete_place; i < search_block.elements_num; i++) {
+        search_block.value[i] = search_block.value[i + 1];
+    }
+}
+
 //        _index.open(_index_name);
         _index.seekp(head_preserved + sizeof(Block) * search_block_num);
         _index.write(reinterpret_cast<char *>(&search_block), sizeof(Block));
@@ -291,10 +313,8 @@ public:
         // TODO:
     }
 
-    Block find_block(key_value_pair in) {
 
-//        _index.open(_index_name);
-
+    Block find_block_delete(key_value_pair in) {
         Block search_block;
         int search_block_num;
         bool if_find_block = false;
@@ -305,29 +325,10 @@ public:
         while (search_block_num != tail_num) {
             _index.seekg(head_preserved + sizeof(Block) * search_block_num);
             _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
-            if (search_block.next_min > in)
+            if (search_block.elements_num!=0 && search_block.value[0]<=in && search_block.value[search_block.elements_num-1]>=in)
                 break;
             search_block_num = search_block.next_num;
         }
-//        _index.seekg(head_preserved + sizeof(Block) * head_num);
-//        _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
-//        if (in < search_block.next_min && tail_num != head_num)
-//            if_find_block = true;
-//        if (head_num == tail_num)
-//            if_find_block = true;
-//        while (search_block_num != tail_num && !if_find_block) {
-//            search_block_num = search_block.next_num;
-//            _index.seekg(head_preserved + sizeof(Block) * search_block_num);
-//            _index.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
-//            if (search_block_num == tail_num) {
-//                if (in >= search_block.value[0]) {
-//                    if_find_block = true;
-//                }
-//            } else {
-//                if (in >= search_block.value[0] && in < search_block.next_min)
-//                    if_find_block = true;
-//            }
-//        }
 
 //        _index.close();
         return search_block;
