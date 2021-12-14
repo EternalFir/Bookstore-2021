@@ -9,7 +9,7 @@
 
 #ifndef BOOKSTORE_2021_UNROLLED_LINKLIST_H
 #define BOOKSTORE_2021_UNROLLED_LINKLIST_H
-const int MAX_NUM_PER_BLOCK = 420;
+const int MAX_NUM_PER_BLOCK = 350;
 
 
 template<typename _key_type, typename _value_type>
