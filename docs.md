@@ -250,11 +250,11 @@
 
 *如果开发人员代码风格和文档中的代码风格不同，请自行更改为自己的风格*
 
-### bookstore_main.cpp
+### main.cpp
 
-- `void init();`
+- `void Initialization();`
   - 先检查文件是否存在，如不存在，则建立文件。
-- `void processLine(AccountManagement& accounts, BookManagement& books);`
+- `void ProcessLine(AccountManagement& accounts, BookManagement& books);`
   - 调用相应类或者函数。
 - `void StringToChar(const std::string& source, char* target, int targetMaxLength);`
   - 将 `source` 转为 `char`
@@ -270,25 +270,25 @@
 - `class TokenScanner;`
 
   private:
-  - `std::string _buffer;` 储存的字符串缓冲区
-  - `int _current = 0;` 所在的位置
-  - `char _delimiter = ' ';` 分隔符
+  - `std::string buffer_;` 储存的字符串缓冲区
+  - `int current_ = 0;` 所在的位置
+  - `char delimiter_ = ' ';` 分隔符
 
   public:
   - `TokenScanner();` Default Constructor
   - `TokenScanner(char delimiter);`
   - `TokenScanner(const std::string& String, char delimiter = ' ');`
   - `~TokenScanner();` Default destructor
-  - `std::string nextToken();`
+  - `std::string NextToken();`
     - 先跳过此前遗留的一个或多个分隔符
     - 记录第一位不是分隔符的位置（如没有则返回空串）
     - 找到下一个分隔符前一个字符
     - 返回字串
-  - `void clear();` 还原到初始空字符串状态
+  - `void Clear();` 还原到初始空字符串状态
   - `friend std::istream& operator>>(std::istream& is, TokenScanner& obj);` 输入新 buffer
-  - `void setDelimiter(char newDelimiter);` 设定新分隔符
+  - `void SetDelimiter(char newdelimiter);` 设定新分隔符
 
-### accounts.h & accounts.cpp
+### accounts.h 
 ```CPP
 #include <iostream>
 #include <fstream>
@@ -305,7 +305,7 @@ struct UserID {
 
   UserID();
 
-  std::string getUserID() const;
+  std::string GetUserID() const;
 
   bool operator==(const UserID& rhs) const;
 
@@ -314,13 +314,13 @@ struct UserID {
 
 class User {
 private:
-  UserID;
+  UserID_;
 
-  char[31] _user_name;
+  char[31] user_name_;
 
-  char[31] _password;
+  char[31] password_;
 
-  int _priority;
+  int priority_;
 
 public:
   User();
@@ -331,7 +331,7 @@ public:
   
   void ChangePassword(const std::string& newPassword);
 
-  [[nodiscard]] int getPriority() const;
+  [[nodiscard]] int GetPriority() const;
 };
 
 struct LogInAccount {
@@ -341,39 +341,40 @@ struct LogInAccount {
 
 class AccountManagement {
 private:
-  std::vector<LogInAccount> LogIn; // 用于储存登录的账户及其选定的书本 id，不可使用 ISBN 作为指定对象，因为 ISBN 可能会被之后其他用户改变
+  std::vector<LogInAccount> login_; // 用于储存登录的账户及其选定的书本 id，不可使用 ISBN 作为指定对象，因为 ISBN 可能会被之后其他用户改变
 
-  fstream _account_data("user_data"); // 用于储存所有数据的文件
+  fstream account_data_("user_data"); // 用于储存所有数据的文件
 
-  UnrolledLinkedList<user_id_map, UserID, int, int> _user_id_map; // 第一个 int 忽略即可，填入时用 0 就行
+  UnrolledLinkedList<user_id_map, UserID, int, int> user_id_map_; // 第一个 int 忽略即可，填入时用 0 就行
 
   // Other private variables ...
   
 public:
   AccountManagement(); // 注意检查是否有用户名为 root，密码为 sjtu，权限为 {7} 的超级管理员账户，如没有，则添加该用户
 
-  void switchUser(TokenScanner& line); // su command
+  void SwitchUser(TokenScanner& line); // su command
 
-  void logOut(TokenScanner& line); // logout command
+  void LogOut(TokenScanner& line); // logout command
 
-  void registerUser(TokenScanner& line); // register command
+  void RegisterUser(TokenScanner& line); // register command
 
-  void changePassword(TokenScanner& line); // passwd command
+  void ChangePassword(TokenScanner& line); // passwd command
 
-  void addUser(TokenScanner& line, LogManagement& logs); // useradd command
+  void AddUser(TokenScanner& line, LogManagement& logs); // useradd command
 
-  void removeUser(TokenScanner& line, LogManagement& logs); // delete command
+  void RemoveUser(TokenScanner& line, LogManagement& logs); // delete command
   
-  void userSelect(int book_id); // 对于当前用户选中对象
+  void UserSelect(int book_id); // 对于当前用户选中对象
 
-  [[nodiscard]] int getCurrentPriority() const;
+  [[nodiscard]] int GetCurrentPriority() const;
 };
 ```
 
 
 
-### book.h & book.cpp
+### book.h 
 *注：可以调用 `AccountManagement::getCurrentPriority()` 来获取权限*
+
 ```CPP
 #include <iostream>
 #include <fstream>
@@ -425,16 +426,16 @@ struct Keyword {
 
 class Book {
 private:
-  ISBN _isbn;
-  BookName _book_name;
-  Author _author;
-  Keyword _keyword;
-  int _quantity = 0;
-  double _price = 0;
-  double _total_cost = 0;
+  ISBN isbn_;
+  BookName book_name_;
+  Author author_;
+  Keyword keyword_;
+  int quantity_ = 0;
+  double price_ = 0;
+  double total_cost_ = 0;
 
 public:
-  int book_ID;
+  int book_ID_;
 
   Book();
 
@@ -449,15 +450,15 @@ public:
 
 class BookManagement {
 private:
-  fstream _book_data("book_data"); // 用于储存所有数据的文件
+  fstream book_data_("book_data"); // 用于储存所有数据的文件
 
-  UnrolledLinkedList<book_name_index, ISBN, int, int> _isbn_map; // 第一个 int 忽略即可，填入时用 0 就行
+  UnrolledLinkedList<book_name_index, ISBN, int, int> isbn_map_; // 第一个 int 忽略即可，填入时用 0 就行
 
-  UnrolledLinkedList<book_name_index, BookName, ISBN, int> _book_name_index;
+  UnrolledLinkedList<book_name_index, BookName, ISBN, int> book_name_index_;
 
-  UnrolledLinkedList<author_map_index, Author, ISBN, int> _author_map_index;
+  UnrolledLinkedList<author_map_index, Author, ISBN, int> author_map_index_;
 
-  UnrolledLinkedList<keyword_index, Keyword, ISBN, int> _keyword_index;
+  UnrolledLinkedList<keyword_index, Keyword, ISBN, int> keyword_index_;
 
   // Other private variables ...
 
@@ -466,55 +467,53 @@ public:
 
   // 下面的指令请调用 accounts::getCurrentPriority() 来获取权限
 
-  void show(TokenScanner& line, AccountManagement& accounts, LogManagement& logs); // 先判断是不是 show finance（都是以 show 开头），然后分四种情况讨论，如无参数，则按照 ISBN 输出全部（traverse 函数）
+  void Show(TokenScanner& line, AccountManagement& accounts, LogManagement& logs); // 先判断是不是 show finance（都是以 show 开头），然后分四种情况讨论，如无参数，则按照 ISBN 输出全部（traverse 函数）
 
-  void buy(TokenScanner& line, AccountManagement& accounts, LogManagement& logs); 
+  void Buy(TokenScanner& line, AccountManagement& accounts, LogManagement& logs); 
 
-  void select(TokenScanner& line, AccountManagement& accounts, LogManagement& logs); // 检查是否有权限，检查是否有 ISBN，然后选中
+  void Select(TokenScanner& line, AccountManagement& accounts, LogManagement& logs); // 检查是否有权限，检查是否有 ISBN，然后选中
 
-  void modify(TokenScanner& line, AccountManagement& accounts, LogManagement& logs); // 检查是否有权限
+  void Modify(TokenScanner& line, AccountManagement& accounts, LogManagement& logs); // 检查是否有权限
 
-  void importBook(TokenScanner& line, AccountManagement& accounts, LogManagement& logs); // 检查是否有权限
+  void ImportBook(TokenScanner& line, AccountManagement& accounts, LogManagement& logs); // 检查是否有权限
 };
 ```
 
 
 
-### unrolled_linked_list.h & unrolled_linked_list.cpp
-*注：此处只罗列必要的组件和接口，其余内容请开发人员实现*
-
+### unrolled_linked_list.h 
 ```CPP
-template<std::string _file_name, typename _key_type, typename _subkey_type, typename _value_type>
+template<std::string index_name, typename key_type, typename subkey_type, typename _value_type>
 class UnrolledLinkedList {
 private:
-  fstream _database(_file_name);
+  fstream index_(index_name);
 
   // ... other private contents
 
 public:
   UnrolledLinkedList();
 
-  void insert(const _key_type& key, const _subkey_type& subkey, const _value_type& value);
+  void Insert(const _key_type& key, const _subkey_type& subkey, const _value_type& value);
 
-  void modify(const _key_type& key, const _subkey_type& subkey, const _value_type& value);
+  void Modify(const _key_type& key, const _subkey_type& subkey, const _value_type& value);
 
-  void erase(const _key_type& key, const _subkey_type& subkey);
+  void Erase(const _key_type& key, const _subkey_type& subkey);
 
-  void clear();
+  void Clear();
 
-  bool exist(const _key_type& key) const;
+  bool Exist(const _key_type& key) const;
 
-  bool exist(const _key_type& key, const _subkey_type& subkey) const;
+  bool Exist(const _key_type& key, const _subkey_type& subkey) const;
 
-  std::vector<_value_type>* traverse(); // 此函数返回一个遍历所有值的有序数组，请用 new 新建 std::vector，并且 std::vector::reserve() 足够多的空间减少浪费，调用该函数需要最后 delete 此指针（使用指针是为了减少不必要的复制）
+  std::vector<_value_type>* Traverse(); // 此函数返回一个遍历所有值的有序数组，请用 new 新建 std::vector，并且 std::vector::reserve() 足够多的空间减少浪费，调用该函数需要最后 delete 此指针（使用指针是为了减少不必要的复制）
 
-  std::vector<_value_type>* traverse(const _key_type& key); // 此函数返回一个遍历所有值的有序数组，请用 new 新建 std::vector，并且 std::vector::reserve() 足够多的空间减少浪费，调用该函数需要最后 delete 此指针（使用指针是为了减少不必要的复制）
+  std::vector<_value_type>* Traverse(const _key_type& key); // 此函数返回一个遍历所有值的有序数组，请用 new 新建 std::vector，并且 std::vector::reserve() 足够多的空间减少浪费，调用该函数需要最后 delete 此指针（使用指针是为了减少不必要的复制）
 
-  [[nodiscard]] _value_type get(const _key_type& key, const _subkey_type& subkey) const;
+  [[nodiscard]] value_type Get(const _key_type& key, const _subkey_type& subkey) const;
 };
 ```
 
-### log.h & log.cpp
+### log.h
 
 ```CPP
 #include <ioetream>
@@ -533,19 +532,20 @@ struct Log {
 
 class LogManagement {
 private:
-  fstream _log_data("log");
-  int _count = 0; // 交易笔数
+  fstream log_data_("log");
+  int count_ = 0; // 交易笔数
 
 public:
   LogManagement();
 
-  void report(TokenScanner& line, AccountManagement& accounts);
+  void Report(TokenScanner& line, AccountManagement& accounts);
 
-  void addLog(log& Log); // 把 log 放进文件的同时还需要检查是否有交易
+  void AddLog(log& Log); // 把 log 放进文件的同时还需要检查是否有交易
 
-  void showFinance(int Limit = -1); // 若为 -1，则显示全部
+  void ShowFinance(int Limit = -1); // 若为 -1，则显示全部
 
-  void log(TokenScanner& line); // log command，检查有无额外的 token
+  void Log(TokenScanner& line); // log command，检查有无额外的 token
 };
 ```
 
+add:使用Google代码规范
