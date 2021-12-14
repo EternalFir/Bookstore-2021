@@ -9,7 +9,7 @@
 
 #ifndef BOOKSTORE_2021_UNROLLED_LINKLIST_H
 #define BOOKSTORE_2021_UNROLLED_LINKLIST_H
-const int MAX_NUM_PER_BLOCK = 360;
+const int MAX_NUM_PER_BLOCK = 350;
 
 
 template<typename _key_type, typename _value_type>
@@ -172,10 +172,16 @@ public:
 //        _index.open(_index_name);
         if (insert_place == 0) {
             Block temp;
-            _index.seekg(head_preserved + sizeof(Block) * (search_block_num - 1));
+            int temp_num=search_block.prev_num;
+            _index.seekg(head_preserved + sizeof(Block) * (temp_num));
             _index.read(reinterpret_cast<char *>(&temp), sizeof(Block));
+            while(temp.elements_num==0&& temp.my_num!=head_num){
+                temp_num=temp.prev_num;
+                _index.seekg(head_preserved + sizeof(Block) * (temp_num));
+                _index.read(reinterpret_cast<char *>(&temp), sizeof(Block));
+            }
             temp.next_min = in;
-            _index.seekp(head_preserved + sizeof(Block) * (search_block_num - 1));
+            _index.seekp(head_preserved + sizeof(Block) * temp.my_num);
             _index.write(reinterpret_cast<char *>(&temp), sizeof(Block));
         }
         _index.seekp(head_preserved + sizeof(Block) * search_block_num);
