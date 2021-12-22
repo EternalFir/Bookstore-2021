@@ -5,40 +5,44 @@
 #include "Unrolled_Linklist.h"
 #include <cstdio>
 #include "Accounts.h"
-struct Char{
+#include "Log.h"
+#include "Book.h"
+
+struct Char {
     char value_[65];
 
     bool operator==(const Char &rhs) const {
-        if(strcmp(value_,rhs.value_)==0)
+        if (strcmp(value_, rhs.value_) == 0)
             return true;
         else
             return false;
     }
 
     bool operator!=(const Char &rhs) const {
-        if(strcmp(value_,rhs.value_)!=0)
+        if (strcmp(value_, rhs.value_) != 0)
             return true;
         else
             return false;
     }
 
     bool operator<(const Char &rhs) const {
-        return strcmp(value_,rhs.value_)<0;
+        return strcmp(value_, rhs.value_) < 0;
     }
 
     bool operator>(const Char &rhs) const {
-        return strcmp(value_,rhs.value_)>0;
+        return strcmp(value_, rhs.value_) > 0;
     }
 
     bool operator<=(const Char &rhs) const {
-        return strcmp(value_,rhs.value_)<=0;
+        return strcmp(value_, rhs.value_) <= 0;
     }
 
     bool operator>=(const Char &rhs) const {
-        return strcmp(value_,rhs.value_)>=0;
+        return strcmp(value_, rhs.value_) >= 0;
     }
 };
-void  Initialization();
+
+void Initialization();
 
 int main() {
 //#ifndef ONLINE_JUDGE
@@ -49,6 +53,6 @@ int main() {
     return 0;
 }
 
-void Initialization(){
+void Initialization() {
 
 }
