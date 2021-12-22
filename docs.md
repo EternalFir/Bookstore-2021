@@ -285,7 +285,7 @@
     - 找到下一个分隔符前一个字符
     - 返回字串
   - `void Clear();` 还原到初始空字符串状态
-  - `friend std::istream& operator>>(std::istream& is, TokenScanner& obj);` 输入新 buffer
+  - `friend std::istream& operator>>(std::istream& input, TokenScanner& obj);` 输入新 buffer
   - `void SetDelimiter(char newdelimiter);` 设定新分隔符
 
 ### Accounts.h 
@@ -298,9 +298,10 @@
 #include "unrolled_linked_list.h"
 #include "log.h"
 
-struct UserID {
-  char[31] value;`
-
+class UserID {
+private:
+  char[31] value_;`
+public:
   UserID(std::string userID);
 
   UserID();
