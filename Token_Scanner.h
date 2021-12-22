@@ -10,17 +10,18 @@
 class TokenScanner {
 private:
     std::string buffer_ = "";
-    int current_=0;
+    int current_ = 0;
     char delimiter_ = ' ';
 public:
     TokenScanner();
 
-    TokenScanner(const TokenScanner& rhs){
-        current_=rhs.current_;
-        current_=rhs.current_;
-        delimiter_=rhs.delimiter_;
-        buffer_=rhs.buffer_;
+    TokenScanner(const TokenScanner &rhs) {
+        current_ = rhs.current_;
+        current_ = rhs.current_;
+        delimiter_ = rhs.delimiter_;
+        buffer_ = rhs.buffer_;
     }
+
     TokenScanner(char delimiter) {
         delimiter_ = delimiter;
     }
@@ -34,13 +35,21 @@ public:
 
     std::string NextToken() {
         std::string out;
+        while (current_ == delimiter_&& current_!=buffer_.length())
+            current_++;
+        if(current_==buffer_.length())
+            return "";
         int start = current_;
         int end = current_;
+
         while (buffer_[end] != delimiter_ && end != buffer_.length()) {
             end++;
         }
         out = buffer_.substr(start, end - start);
+        if(end!=buffer_.length())
         current_ = end + 1;
+        else
+            current_=end;
         return out;
     }
 
@@ -49,13 +58,14 @@ public:
         return;
     }
 
-    friend std::istream& operator>>(std::istream input,std::string newbuffer){// 会重置读取状态
-        buffer_=newbuffer;
-        current_=0;
+    friend std::istream &operator>>(std::istream &input, TokenScanner &obj) {// 会重置读取状态
+        obj.current_ = 0;
+        input >> obj.buffer_;
+        return input;
     }
 
     void SetDelimiter(char newdelimiter) {// 会重置读取状态
-        current_=0;
+        current_ = 0;
         delimiter_ = newdelimiter;
         return;
     }

@@ -16,6 +16,10 @@ enum Behavior {
     AddUser, Delete, Show, Buy, Select, Modify, Import
 };
 struct Log{
-    User
+//    User user;
+    Behavior behavior;
+    char description[150];
+    bool if_earn;
+    double amount;
 };
 #endif //BOOKSTORE_2021_LOG_H

@@ -1,26 +1,31 @@
 //
-// Created by 86158 on 2021/12/10.
+// Created by 86158 on 2021/12/22.
 //
+
+#ifndef BOOKSTORE_2021_UNROLLED_LINKLIST_DOUBLE_KEY_H
+#define BOOKSTORE_2021_UNROLLED_LINKLIST_DOUBLE_KEY_H
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <filesystem>
 #include <vector>
 
-#ifndef BOOKSTORE_2021_UNROLLED_LINKLIST_H
-#define BOOKSTORE_2021_UNROLLED_LINKLIST_H
-const int kMaxNumPerBlock = 360;
-
-//单键版本
-template<typename key_type, typename value_type>
-class UnrolledLinklist {
+//双键版本
+template<typename key_type, typename sub_key_type, typename value_type>
+class UnrolledLinklist_double_key {
 public:
     struct KeyValuePair {// 封装的最小存储单元
         key_type key;
+        sub_key_type sub_key;
         value_type value;
 
         bool operator<(const KeyValuePair &rhs) const {
-            return key < rhs.key;
+            if (key < rhs.key)
+                return true;
+            if (rhs.key < key)
+                return false;
+            return sub_key < rhs.sub_key;
         }
 
         bool operator>(const KeyValuePair &rhs) const {
@@ -36,7 +41,7 @@ public:
         }
 
         bool operator==(const KeyValuePair &rhs) const {
-            return key == rhs.key &&
+            return key == rhs.key && sub_key == rhs.sub_key &&
                    value == rhs.value;
         }
 
@@ -133,10 +138,11 @@ public:
         index_.close();
     }
 
-    void Insert(key_type key_in, value_type value_in) {
+    void Insert(key_type key_in, sub_key_type sub_key_in,value_type value_in) {
         KeyValuePair in;
         in.value = value_in;
         in.key = key_in;
+        in.sub_key=sub_key_in;
 // 先顺序查找到要插入的块
         Block search_block = FindBlockInsert(in);
         int search_block_num = search_block.my_num_;
@@ -273,10 +279,11 @@ public:
         return search_block;
     }
 
-    void Delete(key_type key_in, value_type value_in) {
+    void Delete(key_type key_in,sub_key_type sub_key_in, value_type value_in) {
         KeyValuePair in;
         in.key = key_in;
         in.value = value_in;
+        in.sub_key = sub_key_in;
 // 先顺序查找到要删除的块
         Block search_block = FindBlockDelete(in);
         int search_block_num = search_block.my_num_;
@@ -396,5 +403,4 @@ public:
     }
 };
 
-
-#endif //BOOKSTORE_2021_UNROLLED_LINKLIST_H
+#endif //BOOKSTORE_2021_UNROLLED_LINKLIST_DOUBLE_KEY_H

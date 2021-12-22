@@ -293,14 +293,15 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <stack>
 
 #include "token_scanner.h"
 #include "unrolled_linked_list.h"
-#include "log.h"
+#include "log.h"// 不用，应该在main函数加入log
 
 class UserID {
 private:
-  char[31] value_;`
+  char value_[31];`
 public:
   UserID(std::string userID);
 
@@ -315,11 +316,11 @@ public:
 
 class User {
 private:
-  UserID_;
+  UserID userID_;
 
-  char[31] user_name_;
+  char user_name_[31];
 
-  char[31] password_;
+  char password_[31];
 
   int priority_;
 
@@ -328,11 +329,13 @@ public:
 
   User(const std::string& data);
 
-  User(const std::string& ID, const std::string& name, const std::string& password, int priority);
+  User(const std::string& ID_in, const std::string& name_in, const std::string& password_in, int priority_in);
   
   void ChangePassword(const std::string& newPassword);
 
   [[nodiscard]] int GetPriority() const;
+    
+  bool check_password(const std::string& password_in);
 };
 
 struct LogInAccount {
@@ -342,7 +345,7 @@ struct LogInAccount {
 
 class AccountManagement {
 private:
-  std::vector<LogInAccount> login_; // 用于储存登录的账户及其选定的书本 id，不可使用 ISBN 作为指定对象，因为 ISBN 可能会被之后其他用户改变
+  std::stack<LogInAccount> login_; // 用于储存登录的账户及其选定的书本 id，不可使用 ISBN 作为指定对象，因为 ISBN 可能会被之后其他用户改变
 
   fstream account_data_("user_data"); // 用于储存所有数据的文件
 
@@ -406,7 +409,7 @@ struct BookName {
 };
 
 struct Author {
-  char[61] value;
+  char value[61];
 
   Author(const std::string& s);
 
@@ -416,7 +419,7 @@ struct Author {
 };
 
 struct Keyword {
-  char [61] value;
+  char value[61];
 
   Keyword(const std::string& s);
 
@@ -517,7 +520,7 @@ public:
 ### Log.h
 
 ```CPP
-#include <ioetream>
+#include <iostream>
 #include <fstream>
 
 #include "accounts.h"

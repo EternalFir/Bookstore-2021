@@ -6,6 +6,38 @@
 
 #IncludeRegexTransform: 
 
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Accounts.h
+fstream
+-
+iostream
+-
+vector
+-
+Token_Scanner.h
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Token_Scanner.h
+Unrolled_Linklist.h
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist.h
+
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Book.h
+
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Log.h
+fstream
+-
+iostream
+-
+vector
+-
+Unrolled_Linklist.h
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist.h
+Accounts.h
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Accounts.h
+
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Token_Scanner.h
+iostream
+-
+string
+-
+
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist.h
 iostream
 -
@@ -31,4 +63,10 @@ Unrolled_Linklist.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist.h
 cstdio
 -
+Accounts.h
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Accounts.h
+Log.h
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Log.h
+Book.h
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Book.h
 
