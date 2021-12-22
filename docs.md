@@ -265,7 +265,7 @@
   - `LogManagement logs;`
   - 接下来是一个 `while (ture) {} catch (int) {}` 循环，内部调用 `void processLine();` 函数。
 
-### token_scanner.h & token_scanner.cpp
+### Token_Scanner.h
 
 - `class TokenScanner;`
 
@@ -277,7 +277,7 @@
   public:
   - `TokenScanner();` Default Constructor
   - `TokenScanner(char delimiter);`
-  - `TokenScanner(const std::string& String, char delimiter = ' ');`
+  - `TokenScanner(const std::string& in, char delimiter = ' ');`
   - `~TokenScanner();` Default destructor
   - `std::string NextToken();`
     - 先跳过此前遗留的一个或多个分隔符
@@ -288,7 +288,7 @@
   - `friend std::istream& operator>>(std::istream& is, TokenScanner& obj);` 输入新 buffer
   - `void SetDelimiter(char newdelimiter);` 设定新分隔符
 
-### accounts.h 
+### Accounts.h 
 ```CPP
 #include <iostream>
 #include <fstream>
@@ -372,7 +372,7 @@ public:
 
 
 
-### book.h 
+### Book.h 
 *注：可以调用 `AccountManagement::getCurrentPriority()` 来获取权限*
 
 ```CPP
@@ -481,7 +481,7 @@ public:
 
 
 
-### unrolled_linked_list.h 
+### Unrolled_Linklist.h 
 ```CPP
 template<std::string index_name, typename key_type, typename subkey_type, typename _value_type>
 class UnrolledLinkedList {
@@ -513,7 +513,7 @@ public:
 };
 ```
 
-### log.h
+### Log.h
 
 ```CPP
 #include <ioetream>

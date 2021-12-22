@@ -82,6 +82,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Accounts.h">
+			<Option target="code"/>
+		</Unit>
+		<Unit filename="/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Token_Scanner.h">
+			<Option target="code"/>
+		</Unit>
 		<Unit filename="/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist.h">
 			<Option target="code"/>
 		</Unit>
