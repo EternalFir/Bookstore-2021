@@ -27,7 +27,7 @@ public:
         strcpy(value_, in_ID.c_str());
     }
 
-    std::string GetUserID() const {
+    [[nodiscard]] std::string GetUserID() const {
         std::string out;
         out = value_;
         return out;
@@ -103,7 +103,7 @@ public:
 
 struct LogInAccount {
     User user;
-    UserID selected_book_ID;
+    int selected_book_ID;
 };
 
 class AccountManagement {
@@ -153,7 +153,7 @@ public:
         account_data_.seekg(head_preserved + sizeof(User) * find[0]);
         account_data_.read(reinterpret_cast<char *>(&object), sizeof(User));
         if (password_in.empty()) {
-            if (object.GetPriority() < log_in_[log_in_.size()-1].user.GetPriority()) {
+            if (object.GetPriority() < this->GetCurrentPriority()) {
                 LogInAccount new_log;
                 new_log.user = object;
                 log_in_.push_back(new_log);
@@ -170,7 +170,7 @@ public:
     }
 
     void Logout() {
-        if (log_in_[log_in_.size()-1].user.GetPriority() == 0 || log_in_.empty())
+        if (this->GetCurrentPriority() == 0 || log_in_.empty())
             throw "Invalid\n";
         if (log_in_.empty())
             throw "Invalid\n";
@@ -195,7 +195,7 @@ public:
     }
 
     void ChangePassword(TokenScanner &input) {
-        if (log_in_[log_in_.size()-1].user.GetPriority() == 0 || log_in_.empty())
+        if (this->GetCurrentPriority() == 0 || log_in_.empty())
             throw "Invalid\n";
         std::string ID_in, old_password_in, new_password_in;
         ID_in = input.NextToken();
@@ -210,7 +210,7 @@ public:
         account_data_.read(reinterpret_cast<char *>(&object), sizeof(User));
         if (new_password_in.empty()) {// 省略旧密码情况
             new_password_in = old_password_in;
-            if (log_in_[log_in_.size()-1].user.GetPriority() == 7)
+            if (this->GetCurrentPriority() == 7)
                 object.ChangePassword(new_password_in);
             else
                 throw "Invalid\n";
@@ -224,16 +224,16 @@ public:
         account_data_.write(reinterpret_cast<char *>(&object), sizeof(User));
     }
 
-    void UserAdd(TokenScanner& input){
-        if (log_in_[log_in_.size()-1].user.GetPriority() <3 || log_in_.empty())
+    void UserAdd(TokenScanner &input) {
+        if (this->GetCurrentPriority() < 3 || log_in_.empty())
             throw "Invalid\n";
-        std::string ID_in,password_in,name_in;
+        std::string ID_in, password_in, name_in;
         int priority_in;
-        ID_in=input.NextToken();
-        password_in=input.NextToken();
-        priority_in= atoi(input.NextToken().c_str());
-        name_in=input.NextToken();
-        if(log_in_[log_in_.size()-1].user.GetPriority()<=priority_in)
+        ID_in = input.NextToken();
+        password_in = input.NextToken();
+        priority_in = atoi(input.NextToken().c_str());
+        name_in = input.NextToken();
+        if (log_in_[log_in_.size() - 1].user.GetPriority() <= priority_in)
             throw "Invalid\n";
         std::vector<int> find;
         ID_user_map_.Traverse(find, ID_in);
@@ -246,18 +246,26 @@ public:
         ID_user_map_.Insert(new_user.GetID(), new_user.GetAddress());
     }
 
-    void Delete(TokenScanner& input){
+    void Delete(TokenScanner &input) {
         std::string ID_in;
-        ID_in=input.NextToken();
+        ID_in = input.NextToken();
         std::vector<int> find;
         ID_user_map_.Traverse(find, ID_in);
         if (find.empty())
             throw "Invalid\n";
-        for(int i=0;i<log_in_.size();i++){
-            if(log_in_[i].user.GetID()==ID_in)
+        for (int i = 0; i < log_in_.size(); i++) {
+            if (log_in_[i].user.GetID() == ID_in)
                 throw "Invalid\n";
         }
-        ID_user_map_.Delete(ID_in,find[0]);
+        ID_user_map_.Delete(ID_in, find[0]);
+    }
+
+    void UserSelect(int book_id_in) {// 为当前用户选中对象
+        log_in_[log_in_.size() - 1].selected_book_ID = book_id_in;
+    }
+
+    [[nodiscard]] int GetCurrentPriority()const{
+        return log_in_[log_in_.size()-1].user.GetPriority();
     }
 };
 
