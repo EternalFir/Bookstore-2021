@@ -8,7 +8,6 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include <stack>
 
 #include"Token_Scanner.h"
 #include "Unrolled_Linklist.h"
@@ -69,7 +68,7 @@ private:
 public:
     User();
 
-    User(int address_in, const std::string &ID_in, const std::string &name_in, const std::string &password_in,
+    User(int address_in, const std::string &ID_in, const std::string &password_in, const std::string &name_in,
          int priority_in) {
         address_ = address_in;
         userID_.AddID(ID_in);
@@ -81,6 +80,14 @@ public:
     void ChangePassword(const std::string &newpassword) {
         strcpy(password_, newpassword.c_str());
         return;
+    }
+
+    int GetAddress() const {
+        return address_;
+    }
+
+    UserID GetID() const {
+        return userID_;
     }
 
     [[nodiscard]] int GetPriority() const {
@@ -101,11 +108,11 @@ struct LogInAccount {
 
 class AccountManagement {
 private:
-    std::stack<LogInAccount> log_in_;
+    std::vector<LogInAccount> log_in_;
     std::string data_name_ = "account_data_storage";
     std::fstream account_data_;
     UnrolledLinklist<UserID, int> ID_user_map_;
-    int account_num;// 记录已存储的账号数量，1_based
+    int account_num;// 记录已存储过的账号数量，1_based
     int head_preserved = sizeof(int) + 5;
 public:
     AccountManagement() : ID_user_map_("account_index_storage") {
@@ -115,7 +122,7 @@ public:
             account_data_.close();
             account_data_.open(data_name_);
             account_num = 0;
-            User root(account_num, "root", "root", "sjtu", 7);
+            User root(account_num, "root", "sjtu", "root", 7);
             account_num++;
             account_data_.seekp(0);
             account_data_.write(reinterpret_cast<char *>(&account_num), sizeof(int));
@@ -146,20 +153,111 @@ public:
         account_data_.seekg(head_preserved + sizeof(User) * find[0]);
         account_data_.read(reinterpret_cast<char *>(&object), sizeof(User));
         if (password_in.empty()) {
-            if (object.GetPriority() < log_in_.top().user.GetPriority()) {
+            if (object.GetPriority() < log_in_[log_in_.size()-1].user.GetPriority()) {
                 LogInAccount new_log;
                 new_log.user = object;
-                log_in_.push(new_log);
+                log_in_.push_back(new_log);
             } else
                 throw "Invalid\n";
         } else {
             if (object.check_password(password_in)) {
                 LogInAccount new_log;
                 new_log.user = object;
-                log_in_.push(new_log);
+                log_in_.push_back(new_log);
             } else
                 throw "Invalid\n";
         }
+    }
+
+    void Logout() {
+        if (log_in_[log_in_.size()-1].user.GetPriority() == 0 || log_in_.empty())
+            throw "Invalid\n";
+        if (log_in_.empty())
+            throw "Invalid\n";
+        log_in_.erase(log_in_.end()--);
+        return;
+    }
+
+    void Register(TokenScanner &input) {
+        std::string ID_in, password_in, name_in;
+        ID_in = input.NextToken();
+        password_in = input.NextToken();
+        name_in = input.NextToken();
+        std::vector<int> find;
+        ID_user_map_.Traverse(find, ID_in);
+        if (!find.empty())
+            throw "Invalid\n";
+        User new_user(account_num, ID_in, password_in, name_in, 1);
+        account_num++;
+        account_data_.seekp(head_preserved + new_user.GetAddress() * sizeof(User));
+        account_data_.write(reinterpret_cast<char *>(&new_user), sizeof(User));
+        ID_user_map_.Insert(new_user.GetID(), new_user.GetAddress());
+    }
+
+    void ChangePassword(TokenScanner &input) {
+        if (log_in_[log_in_.size()-1].user.GetPriority() == 0 || log_in_.empty())
+            throw "Invalid\n";
+        std::string ID_in, old_password_in, new_password_in;
+        ID_in = input.NextToken();
+        old_password_in = input.NextToken();
+        new_password_in = input.NextToken();
+        std::vector<int> find;
+        ID_user_map_.Traverse(find, ID_in);
+        if (find.empty())
+            throw "Invalid\n";
+        User object;
+        account_data_.seekg(head_preserved + sizeof(User) * find[0]);
+        account_data_.read(reinterpret_cast<char *>(&object), sizeof(User));
+        if (new_password_in.empty()) {// 省略旧密码情况
+            new_password_in = old_password_in;
+            if (log_in_[log_in_.size()-1].user.GetPriority() == 7)
+                object.ChangePassword(new_password_in);
+            else
+                throw "Invalid\n";
+        } else {// 未省略旧密码
+            if (object.check_password(old_password_in))
+                object.ChangePassword(new_password_in);
+            else
+                throw "Invalid\n";
+        }
+        account_data_.seekp(head_preserved + sizeof(User) * object.GetAddress());
+        account_data_.write(reinterpret_cast<char *>(&object), sizeof(User));
+    }
+
+    void UserAdd(TokenScanner& input){
+        if (log_in_[log_in_.size()-1].user.GetPriority() <3 || log_in_.empty())
+            throw "Invalid\n";
+        std::string ID_in,password_in,name_in;
+        int priority_in;
+        ID_in=input.NextToken();
+        password_in=input.NextToken();
+        priority_in= atoi(input.NextToken().c_str());
+        name_in=input.NextToken();
+        if(log_in_[log_in_.size()-1].user.GetPriority()<=priority_in)
+            throw "Invalid\n";
+        std::vector<int> find;
+        ID_user_map_.Traverse(find, ID_in);
+        if (!find.empty())
+            throw "Invalid\n";
+        User new_user(account_num, ID_in, password_in, name_in, priority_in);
+        account_num++;
+        account_data_.seekp(head_preserved + new_user.GetAddress() * sizeof(User));
+        account_data_.write(reinterpret_cast<char *>(&new_user), sizeof(User));
+        ID_user_map_.Insert(new_user.GetID(), new_user.GetAddress());
+    }
+
+    void Delete(TokenScanner& input){
+        std::string ID_in;
+        ID_in=input.NextToken();
+        std::vector<int> find;
+        ID_user_map_.Traverse(find, ID_in);
+        if (find.empty())
+            throw "Invalid\n";
+        for(int i=0;i<log_in_.size();i++){
+            if(log_in_[i].user.GetID()==ID_in)
+                throw "Invalid\n";
+        }
+        ID_user_map_.Delete(ID_in,find[0]);
     }
 };
 
