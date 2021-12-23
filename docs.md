@@ -307,7 +307,7 @@ public:
 
   UserID();
 
-  std::string GetUserID() const;
+  [[nodiscard]] std::string GetUserID() const;
 
   bool operator==(const UserID& rhs) const;
 
