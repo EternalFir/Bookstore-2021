@@ -329,10 +329,14 @@ public:
 
   User(const std::string& data);
 
-  User(const std::string& ID_in, const std::string& name_in, const std::string& password_in, int priority_in);
+  User(int address_in,const std::string& ID_in,  const std::string& password_in,const std::string& name_in, int priority_in);
   
   void ChangePassword(const std::string& newPassword);
-
+    
+  int GetAddress()const;
+    
+   UserID GetID() const; 
+    
   [[nodiscard]] int GetPriority() const;
     
   bool check_password(const std::string& password_in);
