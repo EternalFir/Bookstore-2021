@@ -97,7 +97,7 @@ private:
 
 public:
 
-    UnrolledLinklist(std::string in) {
+    UnrolledLinklist_double_key(std::string in) {
         index_name_ = in;
         index_.open(index_name_);
         if (!index_) {
@@ -129,7 +129,7 @@ public:
 //        index_.close();
     }
 
-    ~UnrolledLinklist() {
+    ~UnrolledLinklist_double_key() {
 //        index_.open(index_name_);
         index_.seekp(0);
         index_.write(reinterpret_cast<char *>(&head_num), sizeof(int));
@@ -138,11 +138,11 @@ public:
         index_.close();
     }
 
-    void Insert(key_type key_in, sub_key_type sub_key_in,value_type value_in) {
+    void Insert(key_type key_in, sub_key_type sub_key_in, value_type value_in) {
         KeyValuePair in;
         in.value = value_in;
         in.key = key_in;
-        in.sub_key=sub_key_in;
+        in.sub_key = sub_key_in;
 // 先顺序查找到要插入的块
         Block search_block = FindBlockInsert(in);
         int search_block_num = search_block.my_num_;
@@ -279,7 +279,7 @@ public:
         return search_block;
     }
 
-    void Delete(key_type key_in,sub_key_type sub_key_in, value_type value_in) {
+    void Delete(key_type key_in, sub_key_type sub_key_in, value_type value_in) {
         KeyValuePair in;
         in.key = key_in;
         in.value = value_in;
@@ -400,6 +400,54 @@ public:
             ans.push_back(search_block.value_[i].value);
         }
         return;
+    }
+
+    [[nodiscard]] value_type Get(const key_type &key_in) {// 仅返回符合key_main的
+        Block search_block;
+        int search_block_num;
+        value_type ans;
+        search_block_num = head_num;
+        index_.seekg(head_preserved + sizeof(Block) * search_block_num);
+        index_.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
+        search_block_num = search_block.next_num_;
+        while (search_block_num != tail_num) {
+            index_.seekg(head_preserved + sizeof(Block) * search_block_num);
+            index_.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
+            if (search_block.next_num_ != tail_num) {
+                if ((search_block.value_[0].key <= key_in && search_block.next_min_.key >= key_in) &&
+                    search_block.elements_num_ != 0)
+                    GetBlock(ans, search_block, key_in);
+                break;
+            } else {
+                if (search_block.value_[0].key <= key_in && search_block.elements_num_ != 0)
+                    GetBlock(ans, search_block, key_in);
+            }
+            search_block_num = search_block.next_num_;
+        }
+        return ans;
+    }
+
+    void GetBlock(value_type &ans, const Block &search_block, key_type key_in) {
+        int l = 0;
+        int r = search_block.elements_num_ - 1;
+        bool if_find = false;
+        while (l <= r && !if_find) {
+            int mid = l + ((r - l) >> 1);
+            if (search_block.value_[mid].key == key_in) {
+                if_find = true;
+                ans = search_block.value_[mid].value;
+            } else if (search_block.value_[mid].key < key_in)
+                l = mid + 1;
+            else
+                r = mid - 1;
+        }
+        if (!if_find)
+            if (strcmp(typeid(ans).name(), "int") == 0)
+                ans = -1;
+//            else if(strcmp(typeid(ans).name(),"char")==0)
+//                ans=' ';
+            else
+                ans = "";
     }
 };
 

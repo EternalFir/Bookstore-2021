@@ -145,12 +145,12 @@ public:
         ID_in = input.NextToken();
         password_in = input.NextToken();
         User object;
-        std::vector<int> find;
-        ID_user_map_.Traverse(find, ID_in);
-        if (find.empty()) {
+        int find;
+        find = ID_user_map_.Get(ID_in);
+        if (find == -1) {
             throw "Invalid\n";
         }
-        account_data_.seekg(head_preserved + sizeof(User) * find[0]);
+        account_data_.seekg(head_preserved + sizeof(User) * find);
         account_data_.read(reinterpret_cast<char *>(&object), sizeof(User));
         if (password_in.empty()) {
             if (object.GetPriority() < this->GetCurrentPriority()) {
@@ -183,10 +183,11 @@ public:
         ID_in = input.NextToken();
         password_in = input.NextToken();
         name_in = input.NextToken();
-        std::vector<int> find;
-        ID_user_map_.Traverse(find, ID_in);
-        if (!find.empty())
+        int find;
+        find = ID_user_map_.Get(ID_in);
+        if (find != -1) {
             throw "Invalid\n";
+        }
         User new_user(account_num, ID_in, password_in, name_in, 1);
         account_num++;
         account_data_.seekp(head_preserved + new_user.GetAddress() * sizeof(User));
@@ -201,12 +202,13 @@ public:
         ID_in = input.NextToken();
         old_password_in = input.NextToken();
         new_password_in = input.NextToken();
-        std::vector<int> find;
-        ID_user_map_.Traverse(find, ID_in);
-        if (find.empty())
+        int find;
+        find = ID_user_map_.Get(ID_in);
+        if (find == -1) {
             throw "Invalid\n";
+        }
         User object;
-        account_data_.seekg(head_preserved + sizeof(User) * find[0]);
+        account_data_.seekg(head_preserved + sizeof(User) * find);
         account_data_.read(reinterpret_cast<char *>(&object), sizeof(User));
         if (new_password_in.empty()) {// 省略旧密码情况
             new_password_in = old_password_in;
@@ -235,10 +237,11 @@ public:
         name_in = input.NextToken();
         if (log_in_[log_in_.size() - 1].user.GetPriority() <= priority_in)
             throw "Invalid\n";
-        std::vector<int> find;
-        ID_user_map_.Traverse(find, ID_in);
-        if (!find.empty())
+        int find;
+        find = ID_user_map_.Get(ID_in);
+        if (find != -1) {
             throw "Invalid\n";
+        }
         User new_user(account_num, ID_in, password_in, name_in, priority_in);
         account_num++;
         account_data_.seekp(head_preserved + new_user.GetAddress() * sizeof(User));
@@ -249,10 +252,11 @@ public:
     void Delete(TokenScanner &input) {
         std::string ID_in;
         ID_in = input.NextToken();
-        std::vector<int> find;
-        ID_user_map_.Traverse(find, ID_in);
-        if (find.empty())
+        int find;
+        find = ID_user_map_.Get(ID_in);
+        if (find == -1) {
             throw "Invalid\n";
+        }
         for (int i = 0; i < log_in_.size(); i++) {
             if (log_in_[i].user.GetID() == ID_in)
                 throw "Invalid\n";
@@ -264,8 +268,8 @@ public:
         log_in_[log_in_.size() - 1].selected_book_ID = book_id_in;
     }
 
-    [[nodiscard]] int GetCurrentPriority()const{
-        return log_in_[log_in_.size()-1].user.GetPriority();
+    [[nodiscard]] int GetCurrentPriority() const {
+        return log_in_[log_in_.size() - 1].user.GetPriority();
     }
 };
 

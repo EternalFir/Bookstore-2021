@@ -76,34 +76,34 @@ struct BookName {
     }
 };
 
-struct Auther {
+struct Author {
     char value[61];
 
-    Auther(const std::string &in) {
+    Author(const std::string &in) {
         strcpy(value, in.c_str());
     }
 
-    bool operator==(const Auther &rhs) const {
+    bool operator==(const Author &rhs) const {
         return strcmp(value, rhs.value) == 0;
     }
 
-    bool operator!=(const Auther &rhs) const {
+    bool operator!=(const Author &rhs) const {
         return !(rhs == *this);
     }
 
-    bool operator<(const Auther &rhs) const {
+    bool operator<(const Author &rhs) const {
         return strcmp(value, rhs.value) < 0;
     }
 
-    bool operator>(const Auther &rhs) const {
+    bool operator>(const Author &rhs) const {
         return strcmp(value, rhs.value) > 0;
     }
 
-    bool operator<=(const Auther &rhs) const {
+    bool operator<=(const Author &rhs) const {
         return strcmp(value, rhs.value) <= 0;
     }
 
-    bool operator>=(const Auther &rhs) const {
+    bool operator>=(const Author &rhs) const {
         return strcmp(value, rhs.value) >= 0;
     }
 };
@@ -144,7 +144,7 @@ class Book {
 private:
     ISBN ISBN_;
     BookName book_name_;
-    Auther auther_;
+    Author author_;
     Keyword keyword_;
     int quantity_ = 0;
     double price_ = 0.0;
@@ -154,20 +154,27 @@ public:
 
     Book();
 
-    Book(int ID_in, const std::string &ISBN_in, const std::string bookname_in, const std::string &auther_in,
+    Book(int ID_in, const std::string &ISBN_in, const std::string bookname_in, const std::string &author_in,
          const std::string &keyword_in, int quantity_in = 0, double price_in = 0.0, double total_cost_in = 0.0)
-            : ISBN_(ISBN_in), book_name_(bookname_in), auther_(auther_in), keyword_(keyword_in) {
+            : ISBN_(ISBN_in), book_name_(bookname_in), author_(author_in), keyword_(keyword_in) {
         book_ID_ = ID_in;
         quantity_=quantity_in;
         price_=price_in;
         total_cost_=total_cost_in;
     }
 
-    Book(int ID_in, const std::string& ISBN_in): ISBN_(ISBN_in), book_name_(""), auther_(""), keyword_(""){
+    Book(int ID_in, const std::string& ISBN_in): ISBN_(ISBN_in), book_name_(""), author_(""), keyword_(""){
         book_ID_=ID_in;
     }
 
+    friend std::ostream& operator<<(std::ostream& output,const Book& boook_out){
 
+    }
 };
 
+class BookManagement{
+private:
+    std::fstream book_data_;
+    std::string ="book_data_storage";
+};
 #endif //BOOKSTORE_2021_BOOK_H
