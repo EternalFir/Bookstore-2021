@@ -31,17 +31,16 @@ public:
         delimiter_ = delimiter;
     }
 
-    ~TokenScanner();
+    ~TokenScanner(){}
 
     std::string NextToken() {
         std::string out;
-        while (current_ == delimiter_&& current_!=buffer_.length())
+        while (buffer_[current_]== delimiter_&& current_!=buffer_.length())
             current_++;
         if(current_==buffer_.length())
             return "";
         int start = current_;
         int end = current_;
-
         while (buffer_[end] != delimiter_ && end != buffer_.length()) {
             end++;
         }

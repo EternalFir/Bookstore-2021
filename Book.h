@@ -10,10 +10,14 @@
 #include <vector>
 
 #include"Token_Scanner.h"
+#include "Accounts.h"
 #include "Unrolled_Linklist_double_key.h"
+#include "Unrolled_Linklist.h"
 
 struct ISBN {
     char value[21];
+
+    ISBN() {}
 
     ISBN(const std::string &in) {
         strcpy(value, in.c_str());
@@ -42,10 +46,17 @@ struct ISBN {
     bool operator>=(const ISBN &rhs) const {
         return strcmp(value, rhs.value) >= 0;
     }
+
+    friend std::ostream &operator<<(std::ostream &os, const ISBN &isbn) {
+        os << isbn.value;
+        return os;
+    }
 };
 
 struct BookName {
     char value[61];
+
+    BookName() {}
 
     BookName(const std::string &in) {
         strcpy(value, in.c_str());
@@ -74,10 +85,17 @@ struct BookName {
     bool operator>=(const BookName &rhs) const {
         return strcmp(value, rhs.value) >= 0;
     }
+
+    friend std::ostream &operator<<(std::ostream &os, const BookName &name) {
+        os << name.value;
+        return os;
+    }
 };
 
 struct Author {
     char value[61];
+
+    Author() {}
 
     Author(const std::string &in) {
         strcpy(value, in.c_str());
@@ -106,10 +124,17 @@ struct Author {
     bool operator>=(const Author &rhs) const {
         return strcmp(value, rhs.value) >= 0;
     }
+
+    friend std::ostream &operator<<(std::ostream &os, const Author &author) {
+        os << author.value;
+        return os;
+    }
 };
 
 struct Keyword {
     char value[61];
+
+    Keyword() {};
 
     Keyword(const std::string &in) {
         strcpy(value, in.c_str());
@@ -138,19 +163,25 @@ struct Keyword {
     bool operator>=(const Keyword &rhs) const {
         return strcmp(value, rhs.value) >= 0;
     }
+
+    friend std::ostream &operator<<(std::ostream &os, const Keyword &keyword) {
+        os << keyword.value;
+        return os;
+    }
 };
 
 class Book {
 private:
+
+public:
     ISBN ISBN_;
     BookName book_name_;
     Author author_;
     Keyword keyword_;
+    double total_cost_ = 0.0;
+    int book_ID_;
     int quantity_ = 0;
     double price_ = 0.0;
-    double total_cost_ = 0.0;
-public:
-    int book_ID_;
 
     Book();
 
@@ -158,23 +189,119 @@ public:
          const std::string &keyword_in, int quantity_in = 0, double price_in = 0.0, double total_cost_in = 0.0)
             : ISBN_(ISBN_in), book_name_(bookname_in), author_(author_in), keyword_(keyword_in) {
         book_ID_ = ID_in;
-        quantity_=quantity_in;
-        price_=price_in;
-        total_cost_=total_cost_in;
+        quantity_ = quantity_in;
+        price_ = price_in;
+        total_cost_ = total_cost_in;
     }
 
-    Book(int ID_in, const std::string& ISBN_in): ISBN_(ISBN_in), book_name_(""), author_(""), keyword_(""){
-        book_ID_=ID_in;
+    Book(int ID_in, const std::string &ISBN_in) : ISBN_(ISBN_in), book_name_(""), author_(""), keyword_("") {
+        book_ID_ = ID_in;
     }
 
-    friend std::ostream& operator<<(std::ostream& output,const Book& boook_out){
-
+    friend std::ostream &operator<<(std::ostream &output, const Book &book_out) {
+        output << book_out.ISBN_ << '\t' << book_out.book_name_ << '\t' << book_out.author_ << '\t' << book_out.keyword_
+               << '\t' << book_out.price_ << '\t' << book_out.quantity_ << '\n';
+        return output;
     }
 };
 
-class BookManagement{
+class BookManagement {
 private:
     std::fstream book_data_;
-    std::string ="book_data_storage";
+    std::string data_name_ = "book_data_storage";
+    UnrolledLinklist<ISBN, int> ISBN_book_map_;
+    UnrolledLinklist_double_key<BookName, ISBN, int> bookname_book_map_;
+    UnrolledLinklist_double_key<Author, ISBN, int> author_book_map_;
+    UnrolledLinklist_double_key<Keyword, ISBN, int> keyword_book_map_;
+    int book_num_;// 记录已存储过的图书数量，1_based
+    int head_preserved_ = sizeof(int) + 5;
+public:
+    BookManagement() : ISBN_book_map_("ISBN_index_storage"), bookname_book_map_("bookname_index_storage"),
+                       author_book_map_("author_index_storage"), keyword_book_map_("keyword_index_storage") {
+        book_data_.open(data_name_);
+        if (!book_data_) {
+            book_data_.open(data_name_, std::ostream::out);
+            book_data_.close();
+            book_data_.open(data_name_);
+            book_num_ = 0;
+        } else {
+            book_data_.seekg(0);
+            book_data_.read(reinterpret_cast<char *>(&book_num_), sizeof(int));
+        }
+    }
+
+    ~BookManagement() {
+        book_data_.seekp(0);
+        book_data_.write(reinterpret_cast<char *>(&book_num_), sizeof(int));
+        book_data_.close();
+    }
+
+    void Show(TokenScanner &input, AccountManagement &accounts, LogManagement &logs) {
+        // 记得测一下TokenScanner 仅会出现一类show
+        TokenScanner show_info(input.NextToken(),'=');
+        std::string show_type=show_info.NextToken();
+        std::vector<int> ans_address;
+        std::vector<Book> ans;
+        if(show_type=="-ISBN"){
+
+        }
+        else if(show_type=="-name"){
+
+        }else if(show_type=="-author"){
+
+        }
+        else if(show_type=="-keyword"){
+
+        }
+        else
+            throw "Invalid\n";
+        Book temp;
+        for(int i=0;i<ans_address.size();i++){
+            book_data_.seekg(head_preserved_+ sizeof(Book)*ans_address[i]);
+            book_data_.read(reinterpret_cast<char*>(&temp), sizeof(Book));
+            ans[i]=temp;
+        }
+
+        // 输出未完成
+
+    }
+
+    double Buy(TokenScanner &input, AccountManagement &accounts, LogManagement &logs) {
+        if (accounts.GetCurrentPriority() < 1)
+            throw "Invalid\n";
+        std::string ISBN_in = input.NextToken();
+        int quantity_in = atoi(input.NextToken().c_str());
+        ISBN book_find_ISBN(ISBN_in);
+        int book_place = ISBN_book_map_.Get(book_find_ISBN);
+        if (book_place == -1)
+            throw "Invalid\n";
+        Book book_find;
+        book_data_.seekg(head_preserved_ + book_place * sizeof(Book));
+        book_data_.read(reinterpret_cast<char *>(&book_find), sizeof(Book));
+        if (book_find.quantity_ < quantity_in)
+            throw "Invalid\n";
+        book_find.quantity_ -= quantity_in;
+        double cost = double(book_find.price_ * quantity_in);
+        return cost;
+    }
+
+    void Select(TokenScanner &input, AccountManagement &accounts, LogManagement &logs) {
+        if (accounts.GetCurrentPriority() < 3)
+            throw "Invalid\n";
+        std::string ISBN_in;
+        ISBN_in = input.NextToken();
+        ISBN book_find_ISBN(ISBN_in);
+        if (ISBN_book_map_.Get(book_find_ISBN) == -1) {// 找不到就添加书
+            Book new_book(book_num_, ISBN_in);
+            book_num_++;
+            book_data_.seekp(head_preserved_ + new_book.book_ID_ * sizeof(Book));
+            book_data_.write(reinterpret_cast<char *>(&new_book), sizeof(Book));
+            ISBN_book_map_.Insert(ISBN_in, new_book.book_ID_);// 此时还无法插入到其余的三张表中
+        } else {
+            accounts.UserSelect(ISBN_book_map_.Get(book_find_ISBN));
+        }
+        return;
+    }
 };
+
 #endif //BOOKSTORE_2021_BOOK_H

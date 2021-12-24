@@ -353,7 +353,7 @@ private:
 
   fstream account_data_("user_data"); // 用于储存所有数据的文件
 
-  UnrolledLinkedList<user_id_map, UserID, int, int> user_id_map_; // 第一个 int 忽略即可，填入时用 0 就行
+  UnrolledLinkedList<UserID, int, int> user_id_map_; // 第一个 int 忽略即可，填入时用 0 就行
 
   // Other private variables ...
   
@@ -438,13 +438,13 @@ private:
   BookName book_name_;
   Author author_;
   Keyword keyword_;
-  int quantity_ = 0;
-  double price_ = 0;
   double total_cost_ = 0;
 
 public:
   int book_ID_;
-
+  int quantity_ = 0;
+  double price_ = 0;
+    
   Book();
 
   Book(int id, const std::string& isbn, const std::string& bookName, const std::string& author, const std::string& keyword, int quantity, double price, double _total_cost); // 这样方便构造，但注意 keyword 需要以升序重新排列
@@ -460,13 +460,13 @@ class BookManagement {
 private:
   fstream book_data_("book_data"); // 用于储存所有数据的文件
 
-  UnrolledLinkedList<book_name_index, ISBN, int, int> isbn_map_; // 第一个 int 忽略即可，填入时用 0 就行
+  UnrolledLinkedList< ISBN,int> isbn_map_; // 第一个 int 忽略即可，填入时用 0 就行
 
-  UnrolledLinkedList<book_name_index, BookName, ISBN, int> book_name_index_;
+  UnrolledLinkedList< BookName, ISBN, int> book_name_index_;
 
-  UnrolledLinkedList<author_map_index, Author, ISBN, int> author_map_index_;
+  UnrolledLinkedList< Author, ISBN, int> author_map_index_;
 
-  UnrolledLinkedList<keyword_index, Keyword, ISBN, int> keyword_index_;
+  UnrolledLinkedList<Keyword, ISBN, int> keyword_index_;
 
   // Other private variables ...
 
@@ -491,7 +491,7 @@ public:
 
 ### Unrolled_Linklist.h 
 ```CPP
-template<std::string index_name, typename key_type, typename subkey_type, typename _value_type>
+template< typename key_type, typename subkey_type, typename _value_type>
 class UnrolledLinkedList {
 private:
   fstream index_(index_name);
@@ -533,15 +533,15 @@ enum Behavior {AddUser, Delete, Show, Buy, Select, Modify, Import};
 struct Log {
   User user;
   enum behavior;
-  char[150] description;
+  char description[150];
   bool if_earn = false; // 表示是否是收入
-  double Amount;
+  double amount;
 };
 
 class LogManagement {
 private:
   fstream log_data_("log");
-  int count_ = 0; // 交易笔数
+  int log_num_ = 0; // 交易笔数
 
 public:
   LogManagement();
@@ -552,8 +552,12 @@ public:
 
   void ShowFinance(int Limit = -1); // 若为 -1，则显示全部
 
-  void Log(TokenScanner& line); // log command，检查有无额外的 token
+  void ShowLog(TokenScanner& line); // log command，检查有无额外的 token
 };
 ```
 
 add:使用Google代码规范
+
+
+
+应再实现一个输入检查类
