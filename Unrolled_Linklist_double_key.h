@@ -19,7 +19,11 @@ public:
         key_type key;
         sub_key_type sub_key;
         value_type value;
-
+        KeyValuePair(){
+            key=key_type();
+            sub_key=sub_key_type();
+            value=value_type();
+        }
         bool operator<(const KeyValuePair &rhs) const {
             if (key < rhs.key)
                 return true;
@@ -441,13 +445,7 @@ public:
             else
                 r = mid - 1;
         }
-        if (!if_find)
-            if (strcmp(typeid(ans).name(), "int") == 0)
-                ans = -1;
-//            else if(strcmp(typeid(ans).name(),"char")==0)
-//                ans=' ';
-            else
-                ans = "";
+        return;
     }
 };
 

@@ -7,6 +7,7 @@
 #include "Accounts.h"
 #include "Log.h"
 #include "Book.h"
+#include "Token_Scanner.h"
 
 struct Char {
     char value_[65];
@@ -42,15 +43,15 @@ struct Char {
     }
 };
 
-void Initialization();
+//void Initialization();
 
-void ProcessCommand(TokenScanner &command);
 
 int main() {
 //#ifndef ONLINE_JUDGE
 //    freopen("5in","r",stdin);
 //    freopen("!output.txt","w",stdout);
-//#endif]
+//#endif
+
     std::string command_in;
     AccountManagement account_management;
     while (getline(std::cin, command_in)) {
@@ -76,9 +77,6 @@ int main() {
             std::cout << error_out;
         }
     }
+
     return 0;
-}
-
-void Initialization() {
-
 }

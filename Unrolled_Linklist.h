@@ -19,7 +19,10 @@ public:
     struct KeyValuePair {// 封装的最小存储单元
         key_type key;
         value_type value;
-
+        KeyValuePair(){
+            key=key_type();
+            value=value_type();
+        }
         bool operator<(const KeyValuePair &rhs) const {
             return key < rhs.key;
         }
@@ -396,7 +399,7 @@ public:
         return;
     }
 
-    [[nodiscard]] value_type Get(const key_type& key_in){
+    [[nodiscard]] value_type Get(const key_type &key_in) {
         Block search_block;
         int search_block_num;
         value_type ans;
@@ -421,29 +424,21 @@ public:
         return ans;
     }
 
-    void GetBlock(value_type &ans, const Block& search_block, key_type key_in){
-        int l=0;
-        int r=search_block.elements_num_-1;
-        bool if_find=false;
-        while (l<=r && !if_find){
-            int mid=l + ((r - l) >> 1);
-            if(search_block.value_[mid].key==key_in){
-                if_find= true;
-                ans=search_block.value_[mid].value;
-            }else if(search_block.value_[mid].key<key_in)
-                l=mid+1;
+    void GetBlock(value_type &ans, const Block &search_block, key_type key_in) {
+        int l = 0;
+        int r = search_block.elements_num_ - 1;
+        bool if_find = false;
+        while (l <= r && !if_find) {
+            int mid = l + ((r - l) >> 1);
+            if (search_block.value_[mid].key == key_in) {
+                if_find = true;
+                ans = search_block.value_[mid].value;
+            } else if (search_block.value_[mid].key < key_in)
+                l = mid + 1;
             else
-                r=mid-1;
+                r = mid - 1;
         }
-        if(!if_find)
-        {
-            if(strcmp(typeid(ans).name(),"int")==0)
-                ans=-1;
-//            else if(strcmp(typeid(ans).name(),"char")==0)
-//                ans=' ';
-            else
-                ans="";
-        }
+        return;
     }
 };
 
