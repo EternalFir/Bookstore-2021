@@ -52,6 +52,12 @@ public:
         return out;
     }
 
+    void SetBuffer(const std::string& input){
+        current_=0;
+        buffer_=input;
+        return;
+    }
+
     void Clear() {
         buffer_ = "";
         return;
