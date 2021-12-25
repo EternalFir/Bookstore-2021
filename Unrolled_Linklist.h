@@ -92,8 +92,8 @@ private:
     std::string index_name_;
 
     const unsigned int head_preserved = sizeof(int) * 3 + 2 * sizeof(Block) + 10;// 这个的存储是否会出问题？
-    int head_num;// 0_based
-    int tail_num;
+    int head_num=-1;// 0_based
+    int tail_num=-2;
     int block_num;// 已经使用过的块数目
 
 public:
@@ -422,10 +422,9 @@ public:
         }
     }
 
-    [[nodiscard]] value_type Get(const key_type &key_in) {
+    void Get(const key_type &key_in,value_type& ans) {
         Block search_block;
         int search_block_num;
-        value_type ans;
         search_block_num = head_num;
         index_.seekg(head_preserved + sizeof(Block) * search_block_num);
         index_.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
@@ -444,7 +443,6 @@ public:
             }
             search_block_num = search_block.next_num_;
         }
-        return ans;
     }
 
     void GetBlock(value_type &ans, const Block &search_block, key_type key_in) {

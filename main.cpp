@@ -83,6 +83,8 @@ int main() {
                 book_management.Modify(command, account_management, log_management);
             } else if (order == "import") {
                 book_management.ImportBook(command, account_management, log_management);
+            }else{
+                throw std::string("Invalid\n");
             }
         }
         catch (std::string error_out) {
