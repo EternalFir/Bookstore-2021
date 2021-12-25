@@ -103,7 +103,7 @@ public:
 
 struct LogInAccount {
     User user;
-    int selected_book_ID;
+    int selected_book_ID=-1;
 };
 
 class AccountManagement {
@@ -272,6 +272,10 @@ public:
         if(log_in_.empty())
             return -1;
         return log_in_[log_in_.size() - 1].user.GetPriority();
+    }
+
+    [[nodiscard]] int GetBookSelected () const{
+        return log_in_[log_in_.size() - 1].selected_book_ID;
     }
 };
 

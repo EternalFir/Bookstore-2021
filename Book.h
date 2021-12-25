@@ -182,6 +182,7 @@ public:
     int book_ID_;
     int quantity_ = 0;
     double price_ = 0.0;
+    bool just_ISBN_;// 是否仅有ISBN信息
 
     Book();
 
@@ -192,10 +193,12 @@ public:
         quantity_ = quantity_in;
         price_ = price_in;
         total_cost_ = total_cost_in;
+        just_ISBN_ = false;
     }
 
     Book(int ID_in, const std::string &ISBN_in) : ISBN_(ISBN_in), book_name_(""), author_(""), keyword_("") {
         book_ID_ = ID_in;
+        just_ISBN_ = true;
     }
 
     friend std::ostream &operator<<(std::ostream &output, const Book &book_out) {
@@ -238,32 +241,59 @@ public:
 
     void Show(TokenScanner &input, AccountManagement &accounts, LogManagement &logs) {
         // 记得测一下TokenScanner 仅会出现一类show
-        TokenScanner show_info(input.NextToken(),'=');
-        std::string show_type=show_info.NextToken();
+        TokenScanner show_info(input.NextToken(), '=');
+        std::string show_type = show_info.NextToken();
         std::vector<int> ans_address;
         std::vector<Book> ans;
-        if(show_type=="-ISBN"){
-
-        }
-        else if(show_type=="-name"){
-
-        }else if(show_type=="-author"){
-
-        }
-        else if(show_type=="-keyword"){
-
-        }
-        else
+        if (show_type.empty()) {// 无附加参数时
+            ISBN_book_map_.TraverseAll(ans_address);
+        } else if (show_type == "-ISBN") {
+            std::string ISBN_in = show_info.NextToken();
+            if(ISBN_in.empty())
+                throw "Invalid\n";
+            ISBN_book_map_.Traverse(ans_address, ISBN_in);
+        } else if (show_type == "-name") {
+            TokenScanner name_show(show_info.NextToken(), '"');
+            std::string name_in = name_show.NextToken();
+            if(name_in.empty())
+                throw "Invalid\n";
+            bookname_book_map_.Traverse(ans_address, name_in);
+        } else if (show_type == "-author") {
+            TokenScanner author_show(show_info.NextToken(), '"');
+            std::string author_in = author_show.NextToken();
+            if(author_in.empty())
+                throw "Invalid\n";
+            bookname_book_map_.Traverse(ans_address, author_in);
+        } else if (show_type == "-keyword") {
+            TokenScanner keyword_show(show_info.NextToken(),'"');
+            std::string keyword_in=keyword_show.NextToken();
+            if(keyword_in.empty())
+                throw "Invalid\n";
+            for(int i=0;i<keyword_in.length();i++){
+                if(keyword_in[i]=='|')
+                    throw "Invalid\n";
+            }
+            keyword_book_map_.Traverse(ans_address,keyword_in);
+        } else
             throw "Invalid\n";
         Book temp;
-        for(int i=0;i<ans_address.size();i++){
-            book_data_.seekg(head_preserved_+ sizeof(Book)*ans_address[i]);
-            book_data_.read(reinterpret_cast<char*>(&temp), sizeof(Book));
-            ans[i]=temp;
+        for (int i = 0; i < ans_address.size(); i++) {
+            book_data_.seekg(head_preserved_ + sizeof(Book) * ans_address[i]);
+            book_data_.read(reinterpret_cast<char *>(&temp), sizeof(Book));
+            ans[i] = temp;
         }
-
-        // 输出未完成
-
+        if(ans.empty())
+            std::cout<<'\n';
+        else{
+            for(int i=0;i<ans.size();i++){
+                std::cout<<ans[i].ISBN_<<'\t';
+                std::cout<<ans[i].book_name_<<'\t';
+                std::cout<<ans[i].author_<<'\t';
+                std::cout<<ans[i].keyword_<<'\t';
+                std::cout<<ans[i].price_<<'\t';
+                std::cout<<ans[i].quantity_<<'\n';
+            }
+        }
     }
 
     double Buy(TokenScanner &input, AccountManagement &accounts, LogManagement &logs) {
@@ -301,6 +331,14 @@ public:
             accounts.UserSelect(ISBN_book_map_.Get(book_find_ISBN));
         }
         return;
+    }
+
+    void Modify(TokenScanner &input, AccountManagement &accounts, LogManagement &logs){
+        if(accounts.GetCurrentPriority()<3)
+            throw "Invalid\n";
+        if(accounts.GetBookSelected()==-1)
+            throw "Invalid\n";
+
     }
 };
 
