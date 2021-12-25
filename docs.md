@@ -517,7 +517,7 @@ public:
 
   void Traverse(std::vector<value_type> &ans, key_type in_key); // 此函数返回一个遍历所有值的有序数组，请用 new 新建 std::vector，并且 std::vector::reserve() 足够多的空间减少浪费，调用该函数需要最后 delete 此指针（使用指针是为了减少不必要的复制）
 
-  [[nodiscard]] value_type Get(const _key_type& key, const _subkey_type& subkey) const;
+  void  Get(const _key_type& key, const _subkey_type& subkey,value_type& ans) const;
 };
 ```
 

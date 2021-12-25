@@ -59,7 +59,7 @@ public:
 
     void ShowFinance(TokenScanner &input, AccountManagement &accounts) {
         if (accounts.GetCurrentPriority() < 7)
-            throw "Invalid\n";
+           throw std::string("Invalid\n");
     }
 
     void ShowLog(TokenScanner &input) {// log command
