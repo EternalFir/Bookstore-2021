@@ -361,12 +361,14 @@ public:
                 if_modify_type[0] = true;
                 std::string ISBN_in = modify_command_single.NextToken();
                 ISBN temp(ISBN_in);
+                ISBN_book_map_.Delete(modified_book.ISBN_,modified_book.book_ID_);
                 modified_book.ISBN_ = temp;
+                ISBN_book_map_.Insert(modified_book.ISBN_,modified_book.book_ID_);
             } else if (command_type == "-name") {
                 if (if_modify_type[1])
                     throw "Invalid\n";
                 if_modify_type[1] = true;
-                
+
             }
 
             single_command = input.NextToken();
