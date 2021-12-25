@@ -56,8 +56,10 @@ public:
         log_data_.write(reinterpret_cast<char *>(&log_in), sizeof(Log));
         return;
     }
+    void ShowFinance(TokenScanner& input){
 
-    void ShowLog(TokenScanner& input){// log command
+    }
+    void ShowLog(TokenScanner& input) {// log command
 
     }
 };

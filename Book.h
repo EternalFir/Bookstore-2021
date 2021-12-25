@@ -11,6 +11,7 @@
 
 #include"Token_Scanner.h"
 #include "Accounts.h"
+#include "Log.h"
 #include "Unrolled_Linklist_double_key.h"
 #include "Unrolled_Linklist.h"
 
@@ -182,7 +183,7 @@ public:
     int book_ID_;
     int quantity_ = 0;
     double price_ = 0.0;
-    bool just_ISBN_;// 是否仅有ISBN信息
+    bool if_just_ISBN_;// 是否仅有ISBN信息
 
     Book();
 
@@ -193,12 +194,12 @@ public:
         quantity_ = quantity_in;
         price_ = price_in;
         total_cost_ = total_cost_in;
-        just_ISBN_ = false;
+        if_just_ISBN_ = false;
     }
 
     Book(int ID_in, const std::string &ISBN_in) : ISBN_(ISBN_in), book_name_(""), author_(""), keyword_("") {
         book_ID_ = ID_in;
-        just_ISBN_ = true;
+        if_just_ISBN_ = true;
     }
 
     friend std::ostream &operator<<(std::ostream &output, const Book &book_out) {
@@ -247,33 +248,35 @@ public:
         std::vector<Book> ans;
         if (show_type.empty()) {// 无附加参数时
             ISBN_book_map_.TraverseAll(ans_address);
+        } else if (show_type == "finance") {
+            logs.ShowFinance(input);
         } else if (show_type == "-ISBN") {
             std::string ISBN_in = show_info.NextToken();
-            if(ISBN_in.empty())
+            if (ISBN_in.empty())
                 throw "Invalid\n";
             ISBN_book_map_.Traverse(ans_address, ISBN_in);
         } else if (show_type == "-name") {
             TokenScanner name_show(show_info.NextToken(), '"');
             std::string name_in = name_show.NextToken();
-            if(name_in.empty())
+            if (name_in.empty())
                 throw "Invalid\n";
             bookname_book_map_.Traverse(ans_address, name_in);
         } else if (show_type == "-author") {
             TokenScanner author_show(show_info.NextToken(), '"');
             std::string author_in = author_show.NextToken();
-            if(author_in.empty())
+            if (author_in.empty())
                 throw "Invalid\n";
             bookname_book_map_.Traverse(ans_address, author_in);
         } else if (show_type == "-keyword") {
-            TokenScanner keyword_show(show_info.NextToken(),'"');
-            std::string keyword_in=keyword_show.NextToken();
-            if(keyword_in.empty())
+            TokenScanner keyword_show(show_info.NextToken(), '"');
+            std::string keyword_in = keyword_show.NextToken();
+            if (keyword_in.empty())
                 throw "Invalid\n";
-            for(int i=0;i<keyword_in.length();i++){
-                if(keyword_in[i]=='|')
+            for (int i = 0; i < keyword_in.length(); i++) {
+                if (keyword_in[i] == '|')
                     throw "Invalid\n";
             }
-            keyword_book_map_.Traverse(ans_address,keyword_in);
+            keyword_book_map_.Traverse(ans_address, keyword_in);
         } else
             throw "Invalid\n";
         Book temp;
@@ -282,16 +285,16 @@ public:
             book_data_.read(reinterpret_cast<char *>(&temp), sizeof(Book));
             ans[i] = temp;
         }
-        if(ans.empty())
-            std::cout<<'\n';
-        else{
-            for(int i=0;i<ans.size();i++){
-                std::cout<<ans[i].ISBN_<<'\t';
-                std::cout<<ans[i].book_name_<<'\t';
-                std::cout<<ans[i].author_<<'\t';
-                std::cout<<ans[i].keyword_<<'\t';
-                std::cout<<ans[i].price_<<'\t';
-                std::cout<<ans[i].quantity_<<'\n';
+        if (ans.empty())
+            std::cout << '\n';
+        else {
+            for (int i = 0; i < ans.size(); i++) {
+                std::cout << ans[i].ISBN_ << '\t';
+                std::cout << ans[i].book_name_ << '\t';
+                std::cout << ans[i].author_ << '\t';
+                std::cout << ans[i].keyword_ << '\t';
+                std::cout << ans[i].price_ << '\t';
+                std::cout << ans[i].quantity_ << '\n';
             }
         }
     }
@@ -333,12 +336,62 @@ public:
         return;
     }
 
-    void Modify(TokenScanner &input, AccountManagement &accounts, LogManagement &logs){
-        if(accounts.GetCurrentPriority()<3)
+    void Modify(TokenScanner &input, AccountManagement &accounts, LogManagement &logs) {
+        if (accounts.GetCurrentPriority() < 3)
             throw "Invalid\n";
-        if(accounts.GetBookSelected()==-1)
+        if (accounts.GetBookSelected() == -1)
             throw "Invalid\n";
+        Book modified_book;
+        book_data_.seekg(head_preserved_ + sizeof(Book) * accounts.GetBookSelected());
+        book_data_.read(reinterpret_cast<char *>(&modified_book), sizeof(Book));
+        bool if_modify_type[5] = {false};
+        TokenScanner modify_command_single("=");
+        TokenScanner bookname_modify('"');
+        TokenScanner author_modify('"');
+        TokenScanner keyword_modify('"');
+        std::string single_command = input.NextToken();
+        if (single_command.empty())
+            throw "Invalid\n";
+        while (!single_command.empty()) {
+            modify_command_single.SetBuffer(single_command);
+            std::string command_type = modify_command_single.NextToken();
+            if (command_type == "-ISBN") {
+                if (if_modify_type[0])
+                    throw "Invalid\n";
+                if_modify_type[0] = true;
+                std::string ISBN_in = modify_command_single.NextToken();
+                ISBN temp(ISBN_in);
+                modified_book.ISBN_ = temp;
+            } else if (command_type == "-name") {
+                if (if_modify_type[1])
+                    throw "Invalid\n";
+                if_modify_type[1] = true;
+                
+            }
 
+            single_command = input.NextToken();
+        }
+//       TODO:  if_just_isbn!!!!
+
+
+        book_data_.seekp(head_preserved_ + sizeof(Book) * modified_book.book_ID_);
+        book_data_.write(reinterpret_cast<char *>(&modified_book), sizeof(Book));
+    }
+
+    void ImportBook(TokenScanner &input, AccountManagement &accounts, LogManagement &logs) {
+        if (accounts.GetCurrentPriority() < 3)
+            throw "Invalid\n";
+        if (accounts.GetBookSelected() == -1)
+            throw "Invalid\n";
+        int quantity_in = atoi(input.NextToken().c_str());
+        int total_cost_in = atoi(input.NextToken().c_str());
+        Book changed_book;
+        book_data_.seekg(head_preserved_ + accounts.GetBookSelected() * sizeof(Book));
+        book_data_.read(reinterpret_cast<char *>(&changed_book), sizeof(Book));
+        changed_book.quantity_ += quantity_in;
+        changed_book.total_cost_ += total_cost_in;
+        book_data_.seekp(head_preserved_ + changed_book.book_ID_ * sizeof(Book));
+        book_data_.write(reinterpret_cast<char *>(&changed_book), sizeof(Book));
     }
 };
 
