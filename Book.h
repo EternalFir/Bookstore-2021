@@ -183,9 +183,9 @@ public:
     int book_ID_;
     int quantity_ = 0;
     double price_ = 0.0;
-    bool if_just_ISBN_;// 是否仅有ISBN信息
+//    bool if_just_ISBN_;// 是否仅有ISBN信息 TODO: 并不需要，Delete找不到便无变化
 
-    Book();
+    Book(){}
 
     Book(int ID_in, const std::string &ISBN_in, const std::string bookname_in, const std::string &author_in,
          const std::string &keyword_in, int quantity_in = 0, double price_in = 0.0, double total_cost_in = 0.0)
@@ -194,12 +194,12 @@ public:
         quantity_ = quantity_in;
         price_ = price_in;
         total_cost_ = total_cost_in;
-        if_just_ISBN_ = false;
+//        if_just_ISBN_ = false;
     }
 
     Book(int ID_in, const std::string &ISBN_in) : ISBN_(ISBN_in), book_name_(""), author_(""), keyword_("") {
         book_ID_ = ID_in;
-        if_just_ISBN_ = true;
+//        if_just_ISBN_ = true;
     }
 
     friend std::ostream &operator<<(std::ostream &output, const Book &book_out) {
@@ -241,7 +241,8 @@ public:
     }
 
     void Show(TokenScanner &input, AccountManagement &accounts, LogManagement &logs) {
-        // 记得测一下TokenScanner 仅会出现一类show
+        if (accounts.GetCurrentPriority() < 1)
+            throw "Invalid\n";
         TokenScanner show_info(input.NextToken(), '=');
         std::string show_type = show_info.NextToken();
         std::vector<int> ans_address;
@@ -249,7 +250,7 @@ public:
         if (show_type.empty()) {// 无附加参数时
             ISBN_book_map_.TraverseAll(ans_address);
         } else if (show_type == "finance") {
-            logs.ShowFinance(input);
+            logs.ShowFinance(input, accounts);
         } else if (show_type == "-ISBN") {
             std::string ISBN_in = show_info.NextToken();
             if (ISBN_in.empty())
@@ -346,9 +347,22 @@ public:
         book_data_.read(reinterpret_cast<char *>(&modified_book), sizeof(Book));
         bool if_modify_type[5] = {false};
         TokenScanner modify_command_single("=");
+        std::string ISBN_in;
         TokenScanner bookname_modify('"');
+        std::string bookname_in;
         TokenScanner author_modify('"');
+        std::string author_in;
         TokenScanner keyword_modify('"');
+        std::string keywords_in;
+        std::vector<std::string> keyword_in;
+        std::vector<std::string> keyword_raw;
+        int price_in;
+        TokenScanner keywords_raw(modified_book.keyword_.value);
+        std::string keyword = keywords_raw.NextToken();
+        while (!keyword.empty()) {
+            keyword_raw.push_back(keyword);
+            keyword = keywords_raw.NextToken();
+        }
         std::string single_command = input.NextToken();
         if (single_command.empty())
             throw "Invalid\n";
@@ -359,23 +373,106 @@ public:
                 if (if_modify_type[0])
                     throw "Invalid\n";
                 if_modify_type[0] = true;
-                std::string ISBN_in = modify_command_single.NextToken();
+                ISBN_in = modify_command_single.NextToken();
                 ISBN temp(ISBN_in);
-                ISBN_book_map_.Delete(modified_book.ISBN_,modified_book.book_ID_);
-                modified_book.ISBN_ = temp;
-                ISBN_book_map_.Insert(modified_book.ISBN_,modified_book.book_ID_);
+                int find = -1;
+                find = ISBN_book_map_.Get(temp);
+                if (find == -1)
+                    throw "Invalid\n";
+//                ISBN_book_map_.Delete(modified_book.ISBN_, modified_book.book_ID_);
+//                modified_book.ISBN_ = temp;
+//                ISBN_book_map_.Insert(modified_book.ISBN_, modified_book.book_ID_);
             } else if (command_type == "-name") {
                 if (if_modify_type[1])
                     throw "Invalid\n";
                 if_modify_type[1] = true;
-
+                bookname_modify.SetBuffer(modify_command_single.NextToken());
+                bookname_in = bookname_modify.NextToken();
+//                BookName temp(bookname_in);
+//                bookname_book_map_.Delete(temp, modified_book.ISBN_, modified_book.book_ID_);
+//                modified_book.book_name_ = temp;
+//                bookname_book_map_.Insert(temp, modified_book.ISBN_, modified_book.book_ID_);
+            } else if (command_type == "-author") {
+                if (if_modify_type[2])
+                    throw "Invalid\n";
+                if_modify_type[2] = true;
+                author_modify.SetBuffer(modify_command_single.NextToken());
+                author_in = author_modify.NextToken();
+//                Author temp(author_in);
+//                author_book_map_.Delete(temp, modified_book.ISBN_, modified_book.book_ID_);
+//                modified_book.author_ = temp;
+//                author_book_map_.Insert(temp, modified_book.ISBN_, modified_book.book_ID_);
+            } else if (command_type == "-keyword") {
+                if (if_modify_type[3])
+                    throw "Invalid\n";
+                if_modify_type[3] = true;
+                keyword_modify.SetBuffer(modify_command_single.NextToken());
+                keywords_in = keyword_modify.NextToken();
+                TokenScanner keywords(keywords_in, '|');
+                keyword = keywords.NextToken();
+                while (!keyword.empty()) {
+                    for (int j = 0; j < keyword_in.size(); j++) {
+                        if (keyword == keyword_in[j])
+                            throw "Invalid\n";
+                    }
+                    keyword_in.push_back(keyword);
+                    keyword = keywords.NextToken();
+                }
+            } else if (command_type == "-price") {
+                if (if_modify_type[4])
+                    throw "Invalid\n";
+                if_modify_type[4] = true;
+                price_in = atoi(modify_command_single.NextToken().c_str());
+//                modified_book.price_ = price_in;
+            } else {
+                throw "Invalid\n";
             }
-
             single_command = input.NextToken();
         }
-//       TODO:  if_just_isbn!!!!
-
-
+// 全部分析完成后再进行实际更改
+// 先全部清除
+        ISBN_book_map_.Delete(modified_book.ISBN_, modified_book.book_ID_);
+        bookname_book_map_.Delete(modified_book.book_name_, modified_book.ISBN_, modified_book.book_ID_);
+        author_book_map_.Delete(modified_book.author_, modified_book.ISBN_, modified_book.book_ID_);
+        for (int i = 0; i < keyword_raw.size(); i++) {
+            Keyword temp(keyword_raw[i]);
+            keyword_book_map_.Delete(temp, modified_book.ISBN_, modified_book.book_ID_);
+        }
+// 再作更改
+        if (if_modify_type[0]) {
+            ISBN temp(ISBN_in);
+            modified_book.ISBN_ = temp;
+        }
+        if (if_modify_type[1]) {
+            BookName temp(bookname_in);
+            modified_book.book_name_ = temp;
+        }
+        if (if_modify_type[2]) {
+            Author temp(author_in);
+            modified_book.author_ = temp;
+        }
+        if (if_modify_type[3]) {
+            Keyword temp(keywords_in);
+            modified_book.keyword_ = temp;
+        }
+        if (if_modify_type[4]) {
+            modified_book.price_ = price_in;
+        }
+// 再全部加入
+        ISBN_book_map_.Insert(modified_book.ISBN_, modified_book.book_ID_);
+        bookname_book_map_.Insert(modified_book.book_name_, modified_book.ISBN_, modified_book.book_ID_);
+        author_book_map_.Insert(modified_book.author_, modified_book.ISBN_, modified_book.book_ID_);
+        if (if_modify_type[3]) {
+            for (int i = 0; i < keyword_in.size(); i++) {
+                Keyword temp(keyword_in[i]);
+                keyword_book_map_.Insert(temp, modified_book.ISBN_, modified_book.book_ID_);
+            }
+        } else {
+            for (int i = 0; i < keyword_raw.size(); i++) {
+                Keyword temp(keyword_raw[i]);
+                keyword_book_map_.Insert(temp, modified_book.ISBN_, modified_book.book_ID_);
+            }
+        }
         book_data_.seekp(head_preserved_ + sizeof(Book) * modified_book.book_ID_);
         book_data_.write(reinterpret_cast<char *>(&modified_book), sizeof(Book));
     }

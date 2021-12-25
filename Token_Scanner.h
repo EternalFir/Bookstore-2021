@@ -17,7 +17,6 @@ public:
 
     TokenScanner(const TokenScanner &rhs) {
         current_ = rhs.current_;
-        current_ = rhs.current_;
         delimiter_ = rhs.delimiter_;
         buffer_ = rhs.buffer_;
     }
@@ -31,13 +30,13 @@ public:
         delimiter_ = delimiter;
     }
 
-    ~TokenScanner(){}
+    ~TokenScanner() {}
 
     std::string NextToken() {
         std::string out;
-        while (buffer_[current_]== delimiter_&& current_!=buffer_.length())
+        while (buffer_[current_] == delimiter_ && current_ != buffer_.length())
             current_++;
-        if(current_==buffer_.length())
+        if (current_ == buffer_.length())
             return "";
         int start = current_;
         int end = current_;
@@ -45,16 +44,16 @@ public:
             end++;
         }
         out = buffer_.substr(start, end - start);
-        if(end!=buffer_.length())
-        current_ = end + 1;
+        if (end != buffer_.length())
+            current_ = end + 1;
         else
-            current_=end;
+            current_ = end;
         return out;
     }
 
-    void SetBuffer(const std::string& input){
-        current_=0;
-        buffer_=input;
+    void SetBuffer(const std::string &input) {
+        current_ = 0;
+        buffer_ = input;
         return;
     }
 
@@ -69,9 +68,14 @@ public:
         return input;
     }
 
-    void SetDelimiter(char newdelimiter) {// 会重置读取状态
+    void SetDelimiter(char new_delimiter) {// 会重置读取状态
         current_ = 0;
-        delimiter_ = newdelimiter;
+        delimiter_ = new_delimiter;
+        return;
+    }
+
+    void ReadAgain() {
+        current_ = 0;
         return;
     }
 };

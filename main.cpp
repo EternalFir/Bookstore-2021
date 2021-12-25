@@ -54,6 +54,8 @@ int main() {
 
     std::string command_in;
     AccountManagement account_management;
+    BookManagement book_management;
+    LogManagement log_management;
     while (getline(std::cin, command_in)) {
         try {
             TokenScanner command(command_in);
@@ -71,6 +73,16 @@ int main() {
                 account_management.UserAdd(command);
             } else if (order == "delete") {
                 account_management.Delete(command);
+            } else if (order == "show") {
+                book_management.Show(command, account_management, log_management);
+            } else if (order == "buy") {
+                book_management.Buy(command, account_management, log_management);
+            } else if (order == "select") {
+                book_management.Show(command, account_management, log_management);
+            } else if (order == "modify") {
+                book_management.Modify(command, account_management, log_management);
+            } else if (order == "import") {
+                book_management.ImportBook(command, account_management, log_management);
             }
         }
         catch (std::string error_out) {

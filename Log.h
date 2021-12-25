@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "Unrolled_Linklist.h"
-//#include "Accounts.h"
+#include "Accounts.h"
 
 enum Behavior {
     AddUser, Delete, Show, Buy, Select, Modify, Import
@@ -56,10 +56,13 @@ public:
         log_data_.write(reinterpret_cast<char *>(&log_in), sizeof(Log));
         return;
     }
-    void ShowFinance(TokenScanner& input){
 
+    void ShowFinance(TokenScanner &input, AccountManagement &accounts) {
+        if (accounts.GetCurrentPriority() < 7)
+            throw "Invalid\n";
     }
-    void ShowLog(TokenScanner& input) {// log command
+
+    void ShowLog(TokenScanner &input) {// log command
 
     }
 };
