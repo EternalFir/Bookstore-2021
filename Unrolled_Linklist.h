@@ -19,10 +19,12 @@ public:
     struct KeyValuePair {// 封装的最小存储单元
         key_type key;
         value_type value;
-        KeyValuePair(){
-            key=key_type();
-            value=value_type();
+
+        KeyValuePair() {
+            key = key_type();
+            value = value_type();
         }
+
         bool operator<(const KeyValuePair &rhs) const {
             return key < rhs.key;
         }
@@ -397,6 +399,27 @@ public:
             ans.push_back(search_block.value_[i].value);
         }
         return;
+    }
+
+    void TraverseAll(std::vector<value_type> &ans) {
+        Block search_block;
+        int search_block_num;
+        search_block_num = head_num;
+        index_.seekg(head_preserved + sizeof(Block) * search_block_num);
+        index_.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
+        search_block_num = search_block.next_num_;
+        while (search_block_num != tail_num) {
+            index_.seekg(head_preserved + sizeof(Block) * search_block_num);
+            index_.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
+            TraverseBlockAll(ans, search_block);
+            search_block_num = search_block.next_num_;
+        }
+    }
+
+    void TraverseBlockAll(std::vector<value_type> &ans, const Block &search_block) {
+        for (int i = 0; i < search_block.elements_num_; ++i) {
+            ans.push_back(search_block.value_[i].value);
+        }
     }
 
     [[nodiscard]] value_type Get(const key_type &key_in) {
