@@ -2,47 +2,50 @@
 #include <string>
 #include <cstring>
 #include <vector>
-#include "Unrolled_Linklist.h"
+#include <iomanip>
 #include <cstdio>
+#include <cctype>
+
+#include "Unrolled_Linklist.h"
 #include "Accounts.h"
 #include "Log.h"
 #include "Book.h"
 #include "Token_Scanner.h"
 #include "InputCheck.h"
 
-struct Char {
-    char value_[65];
-
-    bool operator==(const Char &rhs) const {
-        if (strcmp(value_, rhs.value_) == 0)
-            return true;
-        else
-            return false;
-    }
-
-    bool operator!=(const Char &rhs) const {
-        if (strcmp(value_, rhs.value_) != 0)
-            return true;
-        else
-            return false;
-    }
-
-    bool operator<(const Char &rhs) const {
-        return strcmp(value_, rhs.value_) < 0;
-    }
-
-    bool operator>(const Char &rhs) const {
-        return strcmp(value_, rhs.value_) > 0;
-    }
-
-    bool operator<=(const Char &rhs) const {
-        return strcmp(value_, rhs.value_) <= 0;
-    }
-
-    bool operator>=(const Char &rhs) const {
-        return strcmp(value_, rhs.value_) >= 0;
-    }
-};
+//struct Char {
+//    char value_[65];
+//
+//    bool operator==(const Char &rhs) const {
+//        if (strcmp(value_, rhs.value_) == 0)
+//            return true;
+//        else
+//            return false;
+//    }
+//
+//    bool operator!=(const Char &rhs) const {
+//        if (strcmp(value_, rhs.value_) != 0)
+//            return true;
+//        else
+//            return false;
+//    }
+//
+//    bool operator<(const Char &rhs) const {
+//        return strcmp(value_, rhs.value_) < 0;
+//    }
+//
+//    bool operator>(const Char &rhs) const {
+//        return strcmp(value_, rhs.value_) > 0;
+//    }
+//
+//    bool operator<=(const Char &rhs) const {
+//        return strcmp(value_, rhs.value_) <= 0;
+//    }
+//
+//    bool operator>=(const Char &rhs) const {
+//        return strcmp(value_, rhs.value_) >= 0;
+//    }
+//};
 
 //void Initialization();
 
@@ -59,6 +62,7 @@ int main() {
     LogManagement log_management;
     while (getline(std::cin, command_in)) {
         try {
+            CheckType0(command_in);
             TokenScanner command(command_in);
             std::string order;
             order = command.NextToken();
@@ -84,7 +88,11 @@ int main() {
                 book_management.Modify(command, account_management, log_management);
             } else if (order == "import") {
                 book_management.ImportBook(command, account_management, log_management);
-            }else{
+            } else if (order == "quit")
+                break;
+            else if (order == "exit")
+                break;
+            else {
                 throw std::string("Invalid\n");
             }
         }

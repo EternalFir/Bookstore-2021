@@ -17,6 +17,8 @@ Token_Scanner.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Token_Scanner.h
 Unrolled_Linklist.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist.h
+InputCheck.h
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/InputCheck.h
 
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Book.h
 fstream
@@ -24,6 +26,8 @@ fstream
 iostream
 -
 vector
+-
+iomanip
 -
 Token_Scanner.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Token_Scanner.h
@@ -35,11 +39,15 @@ Unrolled_Linklist_double_key.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist_double_key.h
 Unrolled_Linklist.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist.h
+InputCheck.h
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/InputCheck.h
 
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/InputCheck.h
 iostream
 -
 string
+-
+cctype
 -
 
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Log.h
@@ -53,6 +61,8 @@ Unrolled_Linklist.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist.h
 Accounts.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Accounts.h
+InputCheck.h
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/InputCheck.h
 
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Token_Scanner.h
 iostream
@@ -95,10 +105,14 @@ cstring
 -
 vector
 -
-Unrolled_Linklist.h
-/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist.h
+iomanip
+-
 cstdio
 -
+cctype
+-
+Unrolled_Linklist.h
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist.h
 Accounts.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Accounts.h
 Log.h

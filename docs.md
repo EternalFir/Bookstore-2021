@@ -375,6 +375,8 @@ public:
   void UserSelect(int book_id); // 对于当前用户选中对象
 
   [[nodiscard]] int GetCurrentPriority() const;
+    
+  [[nodiscard]] User GetCurrentUser()const
 };
 ```
 
