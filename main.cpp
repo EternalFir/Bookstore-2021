@@ -8,6 +8,7 @@
 #include "Log.h"
 #include "Book.h"
 #include "Token_Scanner.h"
+#include "InputCheck.h"
 
 struct Char {
     char value_[65];
