@@ -11,6 +11,7 @@
 
 #include"Token_Scanner.h"
 #include "Unrolled_Linklist.h"
+#include "InputCheck.h"
 //#include "Log.h"
 
 class UserID {
@@ -133,6 +134,7 @@ public:
             account_data_.seekg(0);
             account_data_.read(reinterpret_cast<char *>(&account_num_), sizeof(int));
         }
+        log_in_.clear();
     }
 
     ~AccountManagement() {
@@ -144,7 +146,9 @@ public:
     void SwitchUser(TokenScanner &input) {
         std::string ID_in, password_in;
         ID_in = input.NextToken();
+        CheckType1(ID_in);
         password_in = input.NextToken();
+        CheckType1(password_in);
         User object;
         int find=-1;
         ID_user_map_.Get(ID_in,find);
@@ -182,8 +186,11 @@ public:
     void Register(TokenScanner &input) {
         std::string ID_in, password_in, name_in;
         ID_in = input.NextToken();
+        CheckType1(ID_in);
         password_in = input.NextToken();
+        CheckType1(password_in);
         name_in = input.NextToken();
+        CheckType2(name_in);
         int find=-1;
         ID_user_map_.Get(ID_in,find);
         if (find != -1) {
@@ -201,23 +208,27 @@ public:
             throw std::string("Invalid\n");
         std::string ID_in, old_password_in, new_password_in;
         ID_in = input.NextToken();
-        old_password_in = input.NextToken();
-        new_password_in = input.NextToken();
+        CheckType1(ID_in);
         int find=-1;
         ID_user_map_.Get(ID_in,find);
         if (find == -1) {
             throw std::string("Invalid\n");
         }
+        old_password_in = input.NextToken();
+        new_password_in = input.NextToken();
         User object;
         account_data_.seekg(head_preserved_ + sizeof(User) * find);
         account_data_.read(reinterpret_cast<char *>(&object), sizeof(User));
         if (new_password_in.empty()) {// 省略旧密码情况
             new_password_in = old_password_in;
+            CheckType1(new_password_in);
             if (this->GetCurrentPriority() == 7)
                 object.ChangePassword(new_password_in);
             else
                 throw std::string("Invalid\n");
         } else {// 未省略旧密码
+            CheckType1(old_password_in);
+            CheckType1(new_password_in);
             if (object.check_password(old_password_in))
                 object.ChangePassword(new_password_in);
             else
@@ -233,10 +244,15 @@ public:
         std::string ID_in, password_in, name_in;
         int priority_in;
         ID_in = input.NextToken();
+        CheckType1(ID_in);
         password_in = input.NextToken();
-        priority_in = atoi(input.NextToken().c_str());
+        CheckType1(password_in);
+        std::string priority_in_str=input.NextToken();
+        CheckType3(priority_in_str);
+        priority_in = atoi(priority_in_str.c_str());
         name_in = input.NextToken();
-        if (log_in_[log_in_.size() - 1].user.GetPriority() <= priority_in)
+        CheckType2(name_in);
+        if (GetCurrentPriority() <= priority_in)
             throw std::string("Invalid\n");
         int find=-1;
         ID_user_map_.Get(ID_in,find);
@@ -253,6 +269,7 @@ public:
     void Delete(TokenScanner &input) {
         std::string ID_in;
         ID_in = input.NextToken();
+        CheckType1(ID_in);
         int find=-1;
         ID_user_map_.Get(ID_in,find);
         if (find == -1) {
@@ -277,6 +294,10 @@ public:
 
     [[nodiscard]] int GetBookSelected () const{
         return log_in_[log_in_.size() - 1].selected_book_ID;
+    }
+
+    [[nodiscard]] User GetCurrentUser()const{
+        return log_in_[log_in_.size() - 1].user;
     }
 };
 
