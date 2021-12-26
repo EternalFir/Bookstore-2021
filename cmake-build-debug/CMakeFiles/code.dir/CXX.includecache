@@ -36,6 +36,12 @@ Unrolled_Linklist_double_key.h
 Unrolled_Linklist.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist.h
 
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/InputCheck.h
+iostream
+-
+string
+-
+
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Log.h
 fstream
 -
@@ -101,4 +107,6 @@ Book.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Book.h
 Token_Scanner.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Token_Scanner.h
+InputCheck.h
+/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/InputCheck.h
 

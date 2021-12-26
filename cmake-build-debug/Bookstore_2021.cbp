@@ -88,6 +88,9 @@
 		<Unit filename="/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Book.h">
 			<Option target="code"/>
 		</Unit>
+		<Unit filename="/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/InputCheck.h">
+			<Option target="code"/>
+		</Unit>
 		<Unit filename="/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Log.h">
 			<Option target="code"/>
 		</Unit>
