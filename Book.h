@@ -320,7 +320,7 @@ public:
             throw std::string("Invalid\n");
         int quantity_in = atoi(quantity_in_str.c_str());
         ISBN book_find_ISBN(ISBN_in);
-        int book_place;
+        int book_place=-1;
         ISBN_book_map_.Get(book_find_ISBN, book_place);
         if (book_place == -1)
             throw std::string("Invalid\n");
