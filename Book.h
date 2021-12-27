@@ -303,6 +303,7 @@ public:
                 std::cout << ans[i].keyword_ << '\t';
                 std::cout << std::setprecision(2) << ans[i].price_ << '\t';
                 std::cout << ans[i].quantity_ << '\n';
+
             }
         }
     }
@@ -382,7 +383,7 @@ public:
         std::vector<std::string> keyword_in;
         std::vector<std::string> keyword_raw;
         double price_in;
-        TokenScanner keywords_raw(modified_book.keyword_.value);
+        TokenScanner keywords_raw(modified_book.keyword_.value,'|');
         std::string keyword = keywords_raw.NextToken();
         while (!keyword.empty()) {
             keyword_raw.push_back(keyword);

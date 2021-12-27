@@ -63,7 +63,7 @@ int main() {
     while (getline(std::cin, command_in)) {
         try {
 
-//            std::cout<<command_in<<std::endl;
+//            std::cout<<"#####"<<command_in<<std::endl;
 
             CheckType0(command_in);
             TokenScanner command(command_in);
