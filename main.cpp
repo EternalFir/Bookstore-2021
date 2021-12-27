@@ -83,7 +83,7 @@ int main() {
             } else if (order == "buy") {
                 book_management.Buy(command, account_management, log_management);
             } else if (order == "select") {
-                book_management.Show(command, account_management, log_management);
+                book_management.Select(command, account_management, log_management);
             } else if (order == "modify") {
                 book_management.Modify(command, account_management, log_management);
             } else if (order == "import") {

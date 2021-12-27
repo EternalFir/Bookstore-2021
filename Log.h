@@ -24,7 +24,7 @@ struct Log {
     bool if_earn;
     double amount;
 
-    Log(){}
+    Log() {}
 
     Log(User user_in, Behavior behavior_in, bool if_earn_in, double amount_in) {
         user = user_in;
@@ -72,35 +72,36 @@ public:
             throw std::string("Invalid\n");
         std::string times_in_str = input.NextToken();
         double ans_add = 0.0;
-        double ans_sub=0.0;
+        double ans_sub = 0.0;
         Log temp;
         if (times_in_str.empty()) {
             log_data_.seekg(head_preserved_);
-            for (int i = 0; i < log_num_; i++){
-                log_data_.read(reinterpret_cast<char*>(&temp), sizeof(Log));
-                if(temp.if_earn)
-                    ans_add+=temp.amount;
+            for (int i = 0; i < log_num_; i++) {
+                log_data_.read(reinterpret_cast<char *>(&temp), sizeof(Log));
+                if (temp.if_earn)
+                    ans_add += temp.amount;
                 else
-                    ans_sub+=temp.amount;
+                    ans_sub += temp.amount;
             }
         } else {
             CheckType6(times_in_str);
             int times_in = atoi(times_in_str.c_str());
             if (times_in > log_num_)
                 throw std::string("Invalid\n");
-            log_data_.seekg(head_preserved_+ sizeof(Log)*(log_num_-times_in));
-            for(int i=0;i<times_in;i++)
-                log_data_.read(reinterpret_cast<char*>(&temp), sizeof(Log));
-            if(temp.if_earn)
-                ans_add+=temp.amount;
-            else
-                ans_sub+=temp.amount;
+            log_data_.seekg(head_preserved_ + sizeof(Log) * (log_num_ - times_in));
+            for (int i = 0; i < times_in; i++) {
+                log_data_.read(reinterpret_cast<char *>(&temp), sizeof(Log));
+                if (temp.if_earn)
+                    ans_add += temp.amount;
+                else
+                    ans_sub += temp.amount;
+            }
         }
         std::cout.setf(std::ios::fixed);
-        std::cout<<"+ ";
-        std::cout<<std::setprecision(2)<<ans_add;
-        std::cout<<" - ";
-        std::cout<<std::setprecision(2)<<ans_sub<<std::endl;
+        std::cout << "+ ";
+        std::cout << std::setprecision(2) << ans_add;
+        std::cout << " - ";
+        std::cout << std::setprecision(2) << ans_sub;
     }
 
     void ShowLog(TokenScanner &input) {// log command
