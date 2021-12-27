@@ -272,7 +272,7 @@ public:
             if (author_in.empty())
                 throw std::string("Invalid\n");
             CheckType5(author_in);
-            bookname_book_map_.Traverse(ans_address, author_in);
+            author_book_map_.Traverse(ans_address, author_in);
         } else if (show_type == "-keyword") {
             TokenScanner keyword_show(show_info.NextToken(), '"');
             std::string keyword_in = keyword_show.NextToken();
@@ -290,7 +290,7 @@ public:
         for (int i = 0; i < ans_address.size(); i++) {
             book_data_.seekg(head_preserved_ + sizeof(Book) * ans_address[i]);
             book_data_.read(reinterpret_cast<char *>(&temp), sizeof(Book));
-            ans[i] = temp;
+            ans.push_back(temp);
         }
         if (ans.empty())
             std::cout << '\n';
@@ -349,6 +349,7 @@ public:
             book_data_.seekp(head_preserved_ + new_book.book_ID_ * sizeof(Book));
             book_data_.write(reinterpret_cast<char *>(&new_book), sizeof(Book));
             ISBN_book_map_.Insert(ISBN_in, new_book.book_ID_);// 此时还无法插入到其余的三张表中
+            accounts.UserSelect(new_book.book_ID_);
         } else {
             accounts.UserSelect(find);
         }
@@ -364,7 +365,7 @@ public:
         book_data_.seekg(head_preserved_ + sizeof(Book) * accounts.GetBookSelected());
         book_data_.read(reinterpret_cast<char *>(&modified_book), sizeof(Book));
         bool if_modify_type[5] = {false};
-        TokenScanner modify_command_single("=");
+        TokenScanner modify_command_single('=');
         std::string ISBN_in;
         TokenScanner bookname_modify('"');
         std::string bookname_in;
