@@ -71,6 +71,9 @@ public:
         if (accounts.GetCurrentPriority() < 7)
             throw std::string("Invalid\n");
         std::string times_in_str = input.NextToken();
+        std::string trush_in=input.NextToken();
+        if(!trush_in.empty())
+            throw std::string("Invalid\n");
         double ans_add = 0.0;
         double ans_sub = 0.0;
         Log temp;

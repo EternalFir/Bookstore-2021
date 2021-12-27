@@ -62,6 +62,9 @@ int main() {
     LogManagement log_management;
     while (getline(std::cin, command_in)) {
         try {
+
+//            std::cout<<command_in<<std::endl;
+
             CheckType0(command_in);
             TokenScanner command(command_in);
             std::string order;
@@ -69,7 +72,7 @@ int main() {
             if (order == "su") {
                 account_management.SwitchUser(command);
             } else if (order == "logout") {
-                account_management.Logout();
+                account_management.Logout(command);
             } else if (order == "register") {
                 account_management.Register(command);
             } else if (order == "passwd") {
@@ -92,7 +95,8 @@ int main() {
                 break;
             else if (order == "exit")
                 break;
-            else {
+            else if (order.empty()) {
+            } else {
                 throw std::string("Invalid\n");
             }
         }
