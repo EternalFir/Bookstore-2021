@@ -314,6 +314,9 @@ public:
         CheckType4(ISBN_in);
         std::string quantity_in_str = input.NextToken();
         CheckType6(quantity_in_str);
+        std::string trush_in=input.NextToken();
+        if(!trush_in.empty())
+            throw std::string("Invalid\n");
         int quantity_in = atoi(quantity_in_str.c_str());
         ISBN book_find_ISBN(ISBN_in);
         int book_place;
@@ -340,6 +343,9 @@ public:
             throw std::string("Invalid\n");
         std::string ISBN_in = input.NextToken();
         CheckType4(ISBN_in);
+        std::string trush_in=input.NextToken();
+        if(!trush_in.empty())
+            throw std::string("Invalid\n");
         ISBN book_find_ISBN(ISBN_in);
         int find = -1;
         ISBN_book_map_.Get(book_find_ISBN, find);
@@ -515,6 +521,9 @@ public:
         std::string total_cost_in_str = input.NextToken();
         CheckType7(total_cost_in_str);
         double total_cost_in = atof(total_cost_in_str.c_str());
+        std::string trush_in=input.NextToken();
+        if(!trush_in.empty())
+            throw std::string("Invalid\n");
         Book changed_book;
         book_data_.seekg(head_preserved_ + accounts.GetBookSelected() * sizeof(Book));
         book_data_.read(reinterpret_cast<char *>(&changed_book), sizeof(Book));

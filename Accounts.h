@@ -144,11 +144,14 @@ public:
     }
 
     void SwitchUser(TokenScanner &input) {
-        std::string ID_in, password_in;
+        std::string ID_in, password_in,trush_in;
         ID_in = input.NextToken();
         CheckType1(ID_in);
         password_in = input.NextToken();
         CheckType1(password_in);
+        trush_in=input.NextToken();
+        if(!trush_in.empty())
+            throw std::string("Invalid\n");
         User object;
         int find=-1;
         ID_user_map_.Get(ID_in,find);
@@ -174,23 +177,35 @@ public:
         }
     }
 
-    void Logout() {
+    void Logout(TokenScanner& input) {
         if (this->GetCurrentPriority() <1)
             throw std::string("Invalid\n");
         if (log_in_.empty())
+            throw std::string("Invalid\n");
+        std::string trush_in=input.NextToken();
+        if(!trush_in.empty())
             throw std::string("Invalid\n");
         log_in_.pop_back();
         return;
     }
 
     void Register(TokenScanner &input) {
-        std::string ID_in, password_in, name_in;
+        std::string ID_in, password_in, name_in,trush_in;
         ID_in = input.NextToken();
         CheckType1(ID_in);
+        if(ID_in.empty())
+            throw std::string("Invalid\n");
         password_in = input.NextToken();
         CheckType1(password_in);
+        if(password_in.empty())
+            throw std::string("Invalid\n");
         name_in = input.NextToken();
         CheckType2(name_in);
+        if(name_in.empty())
+            throw std::string("Invalid\n");
+        trush_in=input.NextToken();
+        if(!trush_in.empty())
+            throw std::string("Invalid\n");
         int find=-1;
         ID_user_map_.Get(ID_in,find);
         if (find != -1) {
@@ -206,7 +221,7 @@ public:
     void ChangePassword(TokenScanner &input) {
         if (this->GetCurrentPriority() <1)
             throw std::string("Invalid\n");
-        std::string ID_in, old_password_in, new_password_in;
+        std::string ID_in, old_password_in, new_password_in,trush_in;
         ID_in = input.NextToken();
         CheckType1(ID_in);
         int find=-1;
@@ -216,6 +231,9 @@ public:
         }
         old_password_in = input.NextToken();
         new_password_in = input.NextToken();
+        trush_in=input.NextToken();
+        if(!trush_in.empty())
+            throw std::string("Invalid\n");
         User object;
         account_data_.seekg(head_preserved_ + sizeof(User) * find);
         account_data_.read(reinterpret_cast<char *>(&object), sizeof(User));
@@ -241,7 +259,7 @@ public:
     void UserAdd(TokenScanner &input) {
         if (this->GetCurrentPriority() < 3 )
             throw std::string("Invalid\n");
-        std::string ID_in, password_in, name_in;
+        std::string ID_in, password_in, name_in,trush_in;
         int priority_in;
         ID_in = input.NextToken();
         CheckType1(ID_in);
@@ -252,6 +270,9 @@ public:
         priority_in = atoi(priority_in_str.c_str());
         name_in = input.NextToken();
         CheckType2(name_in);
+        trush_in=input.NextToken();
+        if(!trush_in.empty())
+            throw std::string("Invalid\n");
         if (GetCurrentPriority() <= priority_in)
             throw std::string("Invalid\n");
         int find=-1;
@@ -267,9 +288,12 @@ public:
     }
 
     void Delete(TokenScanner &input) {
-        std::string ID_in;
+        std::string ID_in,trush_in;
         ID_in = input.NextToken();
         CheckType1(ID_in);
+        trush_in=input.NextToken();
+        if(!trush_in.empty())
+            throw std::string("Invalid\n");
         int find=-1;
         ID_user_map_.Get(ID_in,find);
         if (find == -1) {
