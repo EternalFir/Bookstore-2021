@@ -19,11 +19,19 @@ public:
         key_type key;
         sub_key_type sub_key;
         value_type value;
-        KeyValuePair(){
-            key=key_type();
-            sub_key=sub_key_type();
-            value=value_type();
+
+        KeyValuePair() {
+            key = key_type();
+            sub_key = sub_key_type();
+            value = value_type();
         }
+
+        KeyValuePair(const key_type &key_in, const sub_key_type &sub_key_in) {
+            key = key_in;
+            sub_key = sub_key_in;
+            value = value_type();
+        }
+
         bool operator<(const KeyValuePair &rhs) const {
             if (key < rhs.key)
                 return true;
@@ -95,8 +103,8 @@ private:
     std::string index_name_;
 
     const unsigned int head_preserved = sizeof(int) * 3 + 2 * sizeof(Block) + 10;// 这个的存储是否会出问题？
-    int head_num=-1;// 0_based
-    int tail_num=-2;
+    int head_num = -1;// 0_based
+    int tail_num = -2;
     int block_num;// 已经使用过的块数目
 
 public:
@@ -427,7 +435,8 @@ public:
         }
     }
 
-    void Get(const key_type &key_in,value_type& ans) {// 仅返回符合key_main的
+    void Get(const key_type &key_in, const sub_key_type &sub_key_in, value_type &ans) {// 仅返回符合key_main的
+        KeyValuePair object(key_in, sub_key_in);
         Block search_block;
         int search_block_num;
         search_block_num = head_num;
@@ -438,29 +447,29 @@ public:
             index_.seekg(head_preserved + sizeof(Block) * search_block_num);
             index_.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
             if (search_block.next_num_ != tail_num) {
-                if ((search_block.value_[0].key <= key_in && search_block.next_min_.key >= key_in) &&
+                if ((search_block.value_[0] <= object && search_block.next_min_ >= object) &&
                     search_block.elements_num_ != 0)
-                    GetBlock(ans, search_block, key_in);
+                    GetBlock(ans, search_block, object);
                 break;
             } else {
                 if (search_block.value_[0].key <= key_in && search_block.elements_num_ != 0)
-                    GetBlock(ans, search_block, key_in);
+                    GetBlock(ans, search_block, object);
             }
             search_block_num = search_block.next_num_;
         }
         return ans;
     }
 
-    void GetBlock(value_type &ans, const Block &search_block, key_type key_in) {
+    void GetBlock(value_type &ans, const Block &search_block, const KeyValuePair &object_in) {
         int l = 0;
         int r = search_block.elements_num_ - 1;
         bool if_find = false;
         while (l <= r && !if_find) {
             int mid = l + ((r - l) >> 1);
-            if (search_block.value_[mid].key == key_in) {
+            if (search_block.value_[mid] == object_in) {
                 if_find = true;
                 ans = search_block.value_[mid].value;
-            } else if (search_block.value_[mid].key < key_in)
+            } else if (search_block.value_[mid] < object_in)
                 l = mid + 1;
             else
                 r = mid - 1;
