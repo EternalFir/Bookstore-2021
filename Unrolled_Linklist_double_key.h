@@ -448,9 +448,10 @@ public:
             index_.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
             if (search_block.next_num_ != tail_num) {
                 if ((search_block.value_[0] <= object && search_block.next_min_ >= object) &&
-                    search_block.elements_num_ != 0)
+                    search_block.elements_num_ != 0){
                     GetBlock(ans, search_block, object);
-                break;
+                    break;
+                }
             } else {
                 if (search_block.value_[0].key <= key_in && search_block.elements_num_ != 0)
                     GetBlock(ans, search_block, object);

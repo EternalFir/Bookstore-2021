@@ -52,21 +52,25 @@
 
 int main() {
 //#ifndef ONLINE_JUDGE
-////    freopen("5in","r",stdin);
+//    freopen("3.in","r",stdin);
 //    freopen("!output.txt","w",stdout);
 //#endif
 
-    std::string command_in;
     AccountManagement account_management;
     BookManagement book_management;
+    std::string command_in;
     LogManagement log_management;
     while (getline(std::cin, command_in)) {
         try {
 
-//            std::cout<<"#####"<<command_in<<std::endl;
+//            std::cout<<"# "<<command_in<<std::endl;
+
+//            if(command_in=="su fsR uV"){
+//                std::cout<<"adfvs"<<std::endl;
+//            }
 
             CheckType0(command_in);
-            TokenScanner command(command_in);
+            TokenScanner command(command_in );
             std::string order;
             order = command.NextToken();
             if (order == "su") {
@@ -96,7 +100,10 @@ int main() {
             else if (order == "exit")
                 break;
             else if (order.empty()) {
-            } else {
+            }else if(order =="debug"){
+                account_management.Debug();
+            }
+            else {
                 throw std::string("Invalid\n");
             }
         }
