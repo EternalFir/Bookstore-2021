@@ -57,6 +57,11 @@ public:
     bool operator>=(const UserID &rhs) const {
         return strcmp(value_, rhs.value_) >= 0;
     }
+
+    friend std::ostream &operator<<(std::ostream &os, const UserID &id) {
+        os<< id.value_;
+        return os;
+    }
 };
 
 class User {
@@ -322,6 +327,14 @@ public:
 
     [[nodiscard]] User GetCurrentUser()const{
         return log_in_[log_in_.size() - 1].user;
+    }
+
+    void Debug(){
+        std::cout<<log_in_.size()<<std::endl;
+        for(int i=0;i<log_in_.size();++i){
+            LogInAccount now=log_in_[i];
+            std::cout<<now.user.GetID()<<'\t'<<now.user.GetPriority()<< std::endl;
+        }
     }
 };
 
