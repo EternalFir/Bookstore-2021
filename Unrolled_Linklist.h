@@ -433,7 +433,7 @@ public:
             index_.seekg(head_preserved + sizeof(Block) * search_block_num);
             index_.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
             if (search_block.next_num_ != tail_num) {
-                if ((search_block.value_[0].key <= key_in && search_block.next_min_.key >= key_in) &&
+                if ((search_block.value_[0].key <= key_in && search_block.value_[search_block.elements_num_-1].key >= key_in) &&
                     search_block.elements_num_ != 0){
                     GetBlock(ans, search_block, key_in);
                     break;

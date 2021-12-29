@@ -51,10 +51,10 @@
 
 
 int main() {
-//#ifndef ONLINE_JUDGE
-//    freopen("3.in","r",stdin);
-//    freopen("!output.txt","w",stdout);
-//#endif
+#ifndef ONLINE_JUDGE
+    freopen("5.in","r",stdin);
+    freopen("!output.txt","w",stdout);
+#endif
 
     AccountManagement account_management;
     BookManagement book_management;
@@ -65,9 +65,10 @@ int main() {
 
 //            std::cout<<"# "<<command_in<<std::endl;
 
-//            if(command_in=="su fsR uV"){
-//                std::cout<<"adfvs"<<std::endl;
-//            }
+//            if(command_in=="select 978-0-9953009-4-1")
+//                std::cout<<"debug"<<std::endl;
+
+
 
             CheckType0(command_in);
             TokenScanner command(command_in );
