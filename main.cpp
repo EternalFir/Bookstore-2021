@@ -51,10 +51,10 @@
 
 
 int main() {
-#ifndef ONLINE_JUDGE
-    freopen("5.in","r",stdin);
-    freopen("!output.txt","w",stdout);
-#endif
+//#ifndef ONLINE_JUDGE
+//    freopen("5.in","r",stdin);
+//    freopen("!output.txt","w",stdout);
+//#endif
 
     AccountManagement account_management;
     BookManagement book_management;
