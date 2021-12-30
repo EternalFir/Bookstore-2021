@@ -65,14 +65,22 @@ void CheckType6(const std::string &input) {
     for (int i = 0; i < input.length(); i++)
         if (!isdigit(input[i]))
             throw std::string("Invalid\n");
+    if (atoi(input.c_str()) > 2147483647)
+        throw std::string("Invalid\n");
 }
 
 void CheckType7(const std::string &input) {
-    if (input.length() > 13 || input.empty())
+    if (input.length() > 13 || input.empty() || input.length() < 4)
         throw std::string("Invalid\n");
     for (int i = 0; i < input.length(); i++)
         if ((!isdigit(input[i])) && input[i] != '.')
             throw std::string("Invalid\n");
+    int i = 0;
+    while (input[i] != '.') {
+        i++;
+    }
+    if (i != input.length() - 3)
+        throw std::string("Invalid\n");
 }
 
 void PairCheck(std::string input, char delimiter_in) {

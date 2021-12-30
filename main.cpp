@@ -69,9 +69,8 @@ int main() {
 //                std::cout<<"debug"<<std::endl;
 
 
-
             CheckType0(command_in);
-            TokenScanner command(command_in );
+            TokenScanner command(command_in);
             std::string order;
             order = command.NextToken();
             if (order == "su") {
@@ -96,23 +95,20 @@ int main() {
                 book_management.Modify(command, account_management, log_management);
             } else if (order == "import") {
                 book_management.ImportBook(command, account_management, log_management);
-            } else if (order == "quit"){
-                std::string trush_in=command.NextToken();
-                if(!trush_in.empty())
+            } else if (order == "quit") {
+                std::string trush_in = command.NextToken();
+                if (!trush_in.empty())
                     throw std::string("Invalid\n");
                 break;
-            }
-            else if (order == "exit"){
-                std::string trush_in=command.NextToken();
-                if(!trush_in.empty())
+            } else if (order == "exit") {
+                std::string trush_in = command.NextToken();
+                if (!trush_in.empty())
                     throw std::string("Invalid\n");
                 break;
-            }
-            else if (order.empty()) {
-            }else if(order =="debug"){
+            } else if (order.empty()) {
+            } else if (order == "debug") {
                 account_management.Debug();
-            }
-            else {
+            } else {
                 throw std::string("Invalid\n");
             }
         }
@@ -120,6 +116,5 @@ int main() {
             std::cout << error_out;
         }
     }
-
     return 0;
 }
