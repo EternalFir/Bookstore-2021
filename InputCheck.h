@@ -70,16 +70,16 @@ void CheckType6(const std::string &input) {
 }
 
 void CheckType7(const std::string &input) {
-    if (input.length() > 13 || input.empty() || input.length() < 4)
+    if (input.length() > 13 || input.empty())
         throw std::string("Invalid\n");
     for (int i = 0; i < input.length(); i++)
         if ((!isdigit(input[i])) && input[i] != '.')
             throw std::string("Invalid\n");
-    int i = 0;
-    while (input[i] != '.') {
-        i++;
-    }
-    if (i != input.length() - 3)
+    int num = 0;
+    for (int i = 0; i < input.length(); i++)
+        if (input[i] == '.')
+            num++;
+    if (num > 1)
         throw std::string("Invalid\n");
 }
 
