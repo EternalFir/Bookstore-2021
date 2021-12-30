@@ -254,47 +254,49 @@ public:
         std::vector<Book> ans;
         if (temp_in.empty())// 无附加参数时
             ISBN_book_map_.TraverseAll(ans_address);
-        TokenScanner show_info(temp_in, '=');
-        std::string show_type = show_info.NextToken();
-        if (show_type == "-ISBN") {
-            std::string ISBN_in = show_info.GetRest();
-            if (ISBN_in.empty())
-                throw std::string("Invalid\n");
-            CheckType4(ISBN_in);
-            ISBN_book_map_.Traverse(ans_address, ISBN_in);
-        } else if (show_type == "-name") {
-            std::string temp = show_info.GetRest();
-            PairCheck(temp, '"');
-            TokenScanner name_show(temp, '"');
-            std::string name_in = name_show.NextToken();
-            if (name_in.empty())
-                throw std::string("Invalid\n");
-            CheckType5(name_in);
-            bookname_book_map_.Traverse(ans_address, name_in);
-        } else if (show_type == "-author") {
-            std::string temp = show_info.GetRest();
-            PairCheck(temp, '"');
-            TokenScanner author_show(temp, '"');
-            std::string author_in = author_show.NextToken();
-            if (author_in.empty())
-                throw std::string("Invalid\n");
-            CheckType5(author_in);
-            author_book_map_.Traverse(ans_address, author_in);
-        } else if (show_type == "-keyword") {
-            std::string temp = show_info.GetRest();
-            PairCheck(temp, '"');
-            TokenScanner keyword_show(temp, '"');
-            std::string keyword_in = keyword_show.NextToken();
-            if (keyword_in.empty())
-                throw std::string("Invalid\n");
-            CheckType5(keyword_in);
-            for (int i = 0; i < keyword_in.length(); i++) {
-                if (keyword_in[i] == '|')
+        else{
+            TokenScanner show_info(temp_in, '=');
+            std::string show_type = show_info.NextToken();
+            if (show_type == "-ISBN") {
+                std::string ISBN_in = show_info.GetRest();
+                if (ISBN_in.empty())
                     throw std::string("Invalid\n");
-            }
-            keyword_book_map_.Traverse(ans_address, keyword_in);
-        } else
-            throw std::string("Invalid\n");
+                CheckType4(ISBN_in);
+                ISBN_book_map_.Traverse(ans_address, ISBN_in);
+            } else if (show_type == "-name") {
+                std::string temp = show_info.GetRest();
+                PairCheck(temp, '"');
+                TokenScanner name_show(temp, '"');
+                std::string name_in = name_show.NextToken();
+                if (name_in.empty())
+                    throw std::string("Invalid\n");
+                CheckType5(name_in);
+                bookname_book_map_.Traverse(ans_address, name_in);
+            } else if (show_type == "-author") {
+                std::string temp = show_info.GetRest();
+                PairCheck(temp, '"');
+                TokenScanner author_show(temp, '"');
+                std::string author_in = author_show.NextToken();
+                if (author_in.empty())
+                    throw std::string("Invalid\n");
+                CheckType5(author_in);
+                author_book_map_.Traverse(ans_address, author_in);
+            } else if (show_type == "-keyword") {
+                std::string temp = show_info.GetRest();
+                PairCheck(temp, '"');
+                TokenScanner keyword_show(temp, '"');
+                std::string keyword_in = keyword_show.NextToken();
+                if (keyword_in.empty())
+                    throw std::string("Invalid\n");
+                CheckType5(keyword_in);
+                for (int i = 0; i < keyword_in.length(); i++) {
+                    if (keyword_in[i] == '|')
+                        throw std::string("Invalid\n");
+                }
+                keyword_book_map_.Traverse(ans_address, keyword_in);
+            } else
+                throw std::string("Invalid\n");
+        }
         Book temp;
         for (int i = 0; i < ans_address.size(); i++) {
             book_data_.seekg(head_preserved_ + sizeof(Book) * ans_address[i]);
