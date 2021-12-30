@@ -254,13 +254,13 @@ public:
         } else if (show_type == "finance") {
             logs.ShowFinance(input, accounts);
         } else if (show_type == "-ISBN") {
-            std::string ISBN_in = show_info.GetRest();
+            std::string ISBN_in = show_info.NextToken();
             if (ISBN_in.empty())
                 throw std::string("Invalid\n");
             CheckType4(ISBN_in);
             ISBN_book_map_.Traverse(ans_address, ISBN_in);
         } else if (show_type == "-name") {
-            std::string temp=show_info.GetRest();
+            std::string temp=show_info.NextToken();
             PairCheck(temp,'"');
             TokenScanner name_show(temp, '"');
             std::string name_in = name_show.NextToken();
@@ -269,7 +269,7 @@ public:
             CheckType5(name_in);
             bookname_book_map_.Traverse(ans_address, name_in);
         } else if (show_type == "-author") {
-            std::string temp=show_info.GetRest();
+            std::string temp=show_info.NextToken();
             PairCheck(temp,'"');
             TokenScanner author_show(temp, '"');
             std::string author_in = author_show.NextToken();
@@ -278,7 +278,7 @@ public:
             CheckType5(author_in);
             author_book_map_.Traverse(ans_address, author_in);
         } else if (show_type == "-keyword") {
-            std::string temp=show_info.GetRest();
+            std::string temp=show_info.NextToken();
             PairCheck(temp,'"');
             TokenScanner keyword_show(temp, '"');
             std::string keyword_in = keyword_show.NextToken();
