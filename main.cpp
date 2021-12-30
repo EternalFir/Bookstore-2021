@@ -51,10 +51,10 @@
 
 
 int main() {
-#ifndef ONLINE_JUDGE
-    freopen("3.in","r",stdin);
-    freopen("!output.txt","w",stdout);
-#endif
+//#ifndef ONLINE_JUDGE
+//    freopen("3.in","r",stdin);
+//    freopen("!output.txt","w",stdout);
+//#endif
 
     AccountManagement account_management;
     BookManagement book_management;
@@ -65,8 +65,8 @@ int main() {
 
 //            std::cout<<"# "<<command_in<<std::endl;
 
-            if(command_in=="modify -name=\"despond\" -author=\"BaileyKent\" -keyword=\"UK\" -price=132.75")
-                std::cout<<"debug"<<std::endl;
+//            if(command_in=="modify -name=\"despond\" -author=\"BaileyKent\" -keyword=\"UK\" -price=132.75")
+//                std::cout<<"debug"<<std::endl;
 
 
 
