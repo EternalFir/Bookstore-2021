@@ -51,6 +51,12 @@ public:
         return out;
     }
 
+    std::string GetRest(){
+        std::string out;
+        out=buffer_.substr(current_,buffer_.length()-current_);
+        return out;
+    }
+
     void SetBuffer(const std::string &input) {
         current_ = 0;
         buffer_ = input;
