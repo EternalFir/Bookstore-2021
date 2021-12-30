@@ -96,10 +96,18 @@ int main() {
                 book_management.Modify(command, account_management, log_management);
             } else if (order == "import") {
                 book_management.ImportBook(command, account_management, log_management);
-            } else if (order == "quit")
+            } else if (order == "quit"){
+                std::string trush_in=command.NextToken();
+                if(!trush_in.empty())
+                    throw std::string("Invalid\n");
                 break;
-            else if (order == "exit")
+            }
+            else if (order == "exit"){
+                std::string trush_in=command.NextToken();
+                if(!trush_in.empty())
+                    throw std::string("Invalid\n");
                 break;
+            }
             else if (order.empty()) {
             }else if(order =="debug"){
                 account_management.Debug();
