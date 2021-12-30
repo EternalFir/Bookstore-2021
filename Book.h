@@ -245,7 +245,9 @@ public:
     void Show(TokenScanner &input, AccountManagement &accounts, LogManagement &logs) {
         if (accounts.GetCurrentPriority() < 1)
             throw std::string("Invalid\n");
-        TokenScanner show_info(input.NextToken(), '=');
+        std::string temp_in=input.NextToken();
+        
+        TokenScanner show_info(temp_in, '=');
         std::string show_type = show_info.NextToken();
         std::vector<int> ans_address;
         std::vector<Book> ans;
