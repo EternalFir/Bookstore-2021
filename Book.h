@@ -250,11 +250,14 @@ public:
             logs.ShowFinance(input, accounts);
             return;
         }
+        std::string trush_in = input.NextToken();
+        if (!trush_in.empty())
+            throw std::string("Invalid\n");
         std::vector<int> ans_address;
         std::vector<Book> ans;
         if (temp_in.empty())// 无附加参数时
             ISBN_book_map_.TraverseAll(ans_address);
-        else{
+        else {
             TokenScanner show_info(temp_in, '=');
             std::string show_type = show_info.NextToken();
             if (show_type == "-ISBN") {
