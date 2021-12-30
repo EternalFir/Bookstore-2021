@@ -245,22 +245,23 @@ public:
     void Show(TokenScanner &input, AccountManagement &accounts, LogManagement &logs) {
         if (accounts.GetCurrentPriority() < 1)
             throw std::string("Invalid\n");
-        TokenScanner show_info(input.NextToken(), '=');
+        std::string temp_in=input.NextToken();
+        if(temp_in=="finance")
+            logs.ShowFinance(input, accounts);
+        TokenScanner show_info(temp_in, '=');
         std::string show_type = show_info.NextToken();
         std::vector<int> ans_address;
         std::vector<Book> ans;
         if (show_type.empty()) {// 无附加参数时
             ISBN_book_map_.TraverseAll(ans_address);
-        } else if (show_type == "finance") {
-            logs.ShowFinance(input, accounts);
-        } else if (show_type == "-ISBN") {
-            std::string ISBN_in = show_info.NextToken();
+        }else if (show_type == "-ISBN") {
+            std::string ISBN_in = show_info.GetRest();
             if (ISBN_in.empty())
                 throw std::string("Invalid\n");
             CheckType4(ISBN_in);
             ISBN_book_map_.Traverse(ans_address, ISBN_in);
         } else if (show_type == "-name") {
-            std::string temp=show_info.NextToken();
+            std::string temp=show_info.GetRest();
             PairCheck(temp,'"');
             TokenScanner name_show(temp, '"');
             std::string name_in = name_show.NextToken();
@@ -269,7 +270,7 @@ public:
             CheckType5(name_in);
             bookname_book_map_.Traverse(ans_address, name_in);
         } else if (show_type == "-author") {
-            std::string temp=show_info.NextToken();
+            std::string temp=show_info.GetRest();
             PairCheck(temp,'"');
             TokenScanner author_show(temp, '"');
             std::string author_in = author_show.NextToken();
@@ -278,7 +279,7 @@ public:
             CheckType5(author_in);
             author_book_map_.Traverse(ans_address, author_in);
         } else if (show_type == "-keyword") {
-            std::string temp=show_info.NextToken();
+            std::string temp=show_info.GetRest();
             PairCheck(temp,'"');
             TokenScanner keyword_show(temp, '"');
             std::string keyword_in = keyword_show.NextToken();
@@ -405,7 +406,7 @@ public:
                 if (if_modify_type[0])
                     throw std::string("Invalid\n");
                 if_modify_type[0] = true;
-                ISBN_in = modify_command_single.NextToken();
+                ISBN_in = modify_command_single.GetRest();
                 CheckType4(ISBN_in);
                 ISBN temp(ISBN_in);
                 int find = -1;
@@ -421,7 +422,7 @@ public:
                 if (if_modify_type[1])
                     throw std::string("Invalid\n");
                 if_modify_type[1] = true;
-                std::string temp=modify_command_single.NextToken();
+                std::string temp=modify_command_single.GetRest();
                 PairCheck(temp,'"');
                 bookname_modify.SetBuffer(temp);
                 bookname_in = bookname_modify.NextToken();
@@ -434,7 +435,7 @@ public:
                 if (if_modify_type[2])
                     throw std::string("Invalid\n");
                 if_modify_type[2] = true;
-                std::string temp=modify_command_single.NextToken();
+                std::string temp=modify_command_single.GetRest();
                 PairCheck(temp,'"');
                 author_modify.SetBuffer(temp);
                 author_in = author_modify.NextToken();
@@ -447,7 +448,7 @@ public:
                 if (if_modify_type[3])
                     throw std::string("Invalid\n");
                 if_modify_type[3] = true;
-                std::string temp=modify_command_single.NextToken();
+                std::string temp=modify_command_single.GetRest();
                 PairCheck(temp,'"');
                 keyword_modify.SetBuffer(temp);
                 keywords_in = keyword_modify.NextToken();
@@ -467,7 +468,7 @@ public:
                 if (if_modify_type[4])
                     throw std::string("Invalid\n");
                 if_modify_type[4] = true;
-                std::string price_in_str = modify_command_single.NextToken();
+                std::string price_in_str = modify_command_single.GetRest();
                 CheckType7(price_in_str);
                 price_in = atof(price_in_str.c_str());
 //                modified_book.price_ = price_in;
