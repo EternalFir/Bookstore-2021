@@ -88,6 +88,8 @@ void PairCheck(std::string input, char delimiter_in) {
 
 void DelimiterCheck(std::string input, char delimiter_in) {
     int prev = -1;
+    if (input.length() < 3)
+        throw std::string("Invalid\n");
     if (input[input.length() - 1] == delimiter_in)
         throw std::string("Invalid\n");
     for (int i = 0; i < input.length() - 1; i++) {
