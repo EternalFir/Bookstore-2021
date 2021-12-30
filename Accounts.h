@@ -206,8 +206,6 @@ public:
             throw std::string("Invalid\n");
         name_in = input.NextToken();
         CheckType2(name_in);
-        if(name_in.empty())
-            throw std::string("Invalid\n");
         trush_in=input.NextToken();
         if(!trush_in.empty())
             throw std::string("Invalid\n");
@@ -267,6 +265,8 @@ public:
         std::string ID_in, password_in, name_in,trush_in;
         int priority_in;
         ID_in = input.NextToken();
+        if(ID_in.empty())
+            throw std::string("Invalid\n");
         CheckType1(ID_in);
         password_in = input.NextToken();
         CheckType1(password_in);
