@@ -246,76 +246,75 @@ public:
         if (accounts.GetCurrentPriority() < 1)
             throw std::string("Invalid\n");
         std::string temp_in = input.NextToken();
-        if (temp_in == "finance")
+        if (temp_in == "finance") {
             logs.ShowFinance(input, accounts);
-        else{
-            TokenScanner show_info(temp_in, '=');
-            std::string show_type = show_info.NextToken();
-            std::vector<int> ans_address;
-            std::vector<Book> ans;
-            if (show_type.empty()) {// 无附加参数时
-                ISBN_book_map_.TraverseAll(ans_address);
-            } else if (show_type == "-ISBN") {
-                std::string ISBN_in = show_info.GetRest();
-                if (ISBN_in.empty())
-                    throw std::string("Invalid\n");
-                CheckType4(ISBN_in);
-                ISBN_book_map_.Traverse(ans_address, ISBN_in);
-            } else if (show_type == "-name") {
-                std::string temp = show_info.GetRest();
-                PairCheck(temp, '"');
-                TokenScanner name_show(temp, '"');
-                std::string name_in = name_show.NextToken();
-                if (name_in.empty())
-                    throw std::string("Invalid\n");
-                CheckType5(name_in);
-                bookname_book_map_.Traverse(ans_address, name_in);
-            } else if (show_type == "-author") {
-                std::string temp = show_info.GetRest();
-                PairCheck(temp, '"');
-                TokenScanner author_show(temp, '"');
-                std::string author_in = author_show.NextToken();
-                if (author_in.empty())
-                    throw std::string("Invalid\n");
-                CheckType5(author_in);
-                author_book_map_.Traverse(ans_address, author_in);
-            } else if (show_type == "-keyword") {
-                std::string temp = show_info.GetRest();
-                PairCheck(temp, '"');
-                TokenScanner keyword_show(temp, '"');
-                std::string keyword_in = keyword_show.NextToken();
-                if (keyword_in.empty())
-                    throw std::string("Invalid\n");
-                CheckType5(keyword_in);
-                for (int i = 0; i < keyword_in.length(); i++) {
-                    if (keyword_in[i] == '|')
-                        throw std::string("Invalid\n");
-                }
-                keyword_book_map_.Traverse(ans_address, keyword_in);
-            } else
+            return;
+        }
+        std::vector<int> ans_address;
+        std::vector<Book> ans;
+        if (temp_in.empty())// 无附加参数时
+            ISBN_book_map_.TraverseAll(ans_address);
+        TokenScanner show_info(temp_in, '=');
+        std::string show_type = show_info.NextToken();
+        if (show_type == "-ISBN") {
+            std::string ISBN_in = show_info.GetRest();
+            if (ISBN_in.empty())
                 throw std::string("Invalid\n");
-            Book temp;
-            for (int i = 0; i < ans_address.size(); i++) {
-                book_data_.seekg(head_preserved_ + sizeof(Book) * ans_address[i]);
-                book_data_.read(reinterpret_cast<char *>(&temp), sizeof(Book));
-                ans.push_back(temp);
+            CheckType4(ISBN_in);
+            ISBN_book_map_.Traverse(ans_address, ISBN_in);
+        } else if (show_type == "-name") {
+            std::string temp = show_info.GetRest();
+            PairCheck(temp, '"');
+            TokenScanner name_show(temp, '"');
+            std::string name_in = name_show.NextToken();
+            if (name_in.empty())
+                throw std::string("Invalid\n");
+            CheckType5(name_in);
+            bookname_book_map_.Traverse(ans_address, name_in);
+        } else if (show_type == "-author") {
+            std::string temp = show_info.GetRest();
+            PairCheck(temp, '"');
+            TokenScanner author_show(temp, '"');
+            std::string author_in = author_show.NextToken();
+            if (author_in.empty())
+                throw std::string("Invalid\n");
+            CheckType5(author_in);
+            author_book_map_.Traverse(ans_address, author_in);
+        } else if (show_type == "-keyword") {
+            std::string temp = show_info.GetRest();
+            PairCheck(temp, '"');
+            TokenScanner keyword_show(temp, '"');
+            std::string keyword_in = keyword_show.NextToken();
+            if (keyword_in.empty())
+                throw std::string("Invalid\n");
+            CheckType5(keyword_in);
+            for (int i = 0; i < keyword_in.length(); i++) {
+                if (keyword_in[i] == '|')
+                    throw std::string("Invalid\n");
             }
-            if (ans.empty())
-                std::cout << '\n';
-            else {
-                for (int i = 0; i < ans.size(); i++) {
-                    std::cout.setf(std::ios::fixed);
-                    std::cout << ans[i].ISBN_ << '\t';
-                    std::cout << ans[i].book_name_ << '\t';
-                    std::cout << ans[i].author_ << '\t';
-                    std::cout << ans[i].keyword_ << '\t';
-                    std::cout << std::setprecision(2) << ans[i].price_ << '\t';
-                    std::cout << ans[i].quantity_ << '\n';
+            keyword_book_map_.Traverse(ans_address, keyword_in);
+        } else
+            throw std::string("Invalid\n");
+        Book temp;
+        for (int i = 0; i < ans_address.size(); i++) {
+            book_data_.seekg(head_preserved_ + sizeof(Book) * ans_address[i]);
+            book_data_.read(reinterpret_cast<char *>(&temp), sizeof(Book));
+            ans.push_back(temp);
+        }
+        if (ans.empty())
+            std::cout << '\n';
+        else {
+            for (int i = 0; i < ans.size(); i++) {
+                std::cout.setf(std::ios::fixed);
+                std::cout << ans[i].ISBN_ << '\t';
+                std::cout << ans[i].book_name_ << '\t';
+                std::cout << ans[i].author_ << '\t';
+                std::cout << ans[i].keyword_ << '\t';
+                std::cout << std::setprecision(2) << ans[i].price_ << '\t';
+                std::cout << ans[i].quantity_ << '\n';
 
-                }
             }
         }
-
     }
 
     void Buy(TokenScanner &input, AccountManagement &accounts, LogManagement &logs) {
