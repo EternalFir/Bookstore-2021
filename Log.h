@@ -104,7 +104,7 @@ public:
         std::cout << "+ ";
         std::cout << std::setprecision(2) << ans_add;
         std::cout << " - ";
-        std::cout << std::setprecision(2) << ans_sub;
+        std::cout << std::setprecision(2) << ans_sub<<std::endl;
     }
 
     void ShowLog(TokenScanner &input) {// log command

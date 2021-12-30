@@ -52,7 +52,7 @@
 
 int main() {
 //#ifndef ONLINE_JUDGE
-//    freopen("3.in","r",stdin);
+//    freopen("6.txt","r",stdin);
 //    freopen("!output.txt","w",stdout);
 //#endif
 
