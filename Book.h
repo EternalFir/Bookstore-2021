@@ -452,6 +452,7 @@ public:
                 keyword_modify.SetBuffer(temp);
                 keywords_in = keyword_modify.NextToken();
                 CheckType5(keywords_in);
+                DelimiterCheck(keywords_in,'|');
                 TokenScanner keywords(keywords_in, '|');
                 keyword = keywords.NextToken();
                 while (!keyword.empty()) {
