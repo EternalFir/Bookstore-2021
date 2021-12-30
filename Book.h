@@ -260,21 +260,27 @@ public:
             CheckType4(ISBN_in);
             ISBN_book_map_.Traverse(ans_address, ISBN_in);
         } else if (show_type == "-name") {
-            TokenScanner name_show(show_info.NextToken(), '"');
+            std::string temp=show_info.NextToken();
+            PairCheck(temp,'"');
+            TokenScanner name_show(temp, '"');
             std::string name_in = name_show.NextToken();
             if (name_in.empty())
                 throw std::string("Invalid\n");
             CheckType5(name_in);
             bookname_book_map_.Traverse(ans_address, name_in);
         } else if (show_type == "-author") {
-            TokenScanner author_show(show_info.NextToken(), '"');
+            std::string temp=show_info.NextToken();
+            PairCheck(temp,'"');
+            TokenScanner author_show(temp, '"');
             std::string author_in = author_show.NextToken();
             if (author_in.empty())
                 throw std::string("Invalid\n");
             CheckType5(author_in);
             author_book_map_.Traverse(ans_address, author_in);
         } else if (show_type == "-keyword") {
-            TokenScanner keyword_show(show_info.NextToken(), '"');
+            std::string temp=show_info.NextToken();
+            PairCheck(temp,'"');
+            TokenScanner keyword_show(temp, '"');
             std::string keyword_in = keyword_show.NextToken();
             if (keyword_in.empty())
                 throw std::string("Invalid\n");
@@ -415,7 +421,9 @@ public:
                 if (if_modify_type[1])
                     throw std::string("Invalid\n");
                 if_modify_type[1] = true;
-                bookname_modify.SetBuffer(modify_command_single.NextToken());
+                std::string temp=modify_command_single.NextToken();
+                PairCheck(temp,'"');
+                bookname_modify.SetBuffer(temp);
                 bookname_in = bookname_modify.NextToken();
                 CheckType5(bookname_in);
 //                BookName temp(bookname_in);
@@ -426,7 +434,9 @@ public:
                 if (if_modify_type[2])
                     throw std::string("Invalid\n");
                 if_modify_type[2] = true;
-                author_modify.SetBuffer(modify_command_single.NextToken());
+                std::string temp=modify_command_single.NextToken();
+                PairCheck(temp,'"');
+                author_modify.SetBuffer(temp);
                 author_in = author_modify.NextToken();
                 CheckType5(author_in);
 //                Author temp(author_in);
@@ -437,7 +447,9 @@ public:
                 if (if_modify_type[3])
                     throw std::string("Invalid\n");
                 if_modify_type[3] = true;
-                keyword_modify.SetBuffer(modify_command_single.NextToken());
+                std::string temp=modify_command_single.NextToken();
+                PairCheck(temp,'"');
+                keyword_modify.SetBuffer(temp);
                 keywords_in = keyword_modify.NextToken();
                 CheckType5(keywords_in);
                 TokenScanner keywords(keywords_in, '|');
