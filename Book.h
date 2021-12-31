@@ -264,7 +264,7 @@ public:
                 std::string ISBN_in = show_info.GetRest();
                 if (ISBN_in.empty())
                     throw std::string("Invalid\n");
-                CheckType4(ISBN_in);
+//                CheckType4(ISBN_in);
                 ISBN_book_map_.Traverse(ans_address, ISBN_in);
             } else if (show_type == "-name") {
                 std::string temp = show_info.GetRest();
@@ -273,7 +273,7 @@ public:
                 std::string name_in = name_show.NextToken();
                 if (name_in.empty())
                     throw std::string("Invalid\n");
-                CheckType5(name_in);
+//                CheckType5(name_in);
                 bookname_book_map_.Traverse(ans_address, name_in);
             } else if (show_type == "-author") {
                 std::string temp = show_info.GetRest();
@@ -282,7 +282,7 @@ public:
                 std::string author_in = author_show.NextToken();
                 if (author_in.empty())
                     throw std::string("Invalid\n");
-                CheckType5(author_in);
+//                CheckType5(author_in);
                 author_book_map_.Traverse(ans_address, author_in);
             } else if (show_type == "-keyword") {
                 std::string temp = show_info.GetRest();
@@ -291,7 +291,7 @@ public:
                 std::string keyword_in = keyword_show.NextToken();
                 if (keyword_in.empty())
                     throw std::string("Invalid\n");
-                CheckType5(keyword_in);
+//                CheckType5(keyword_in);
                 for (int i = 0; i < keyword_in.length(); i++) {
                     if (keyword_in[i] == '|')
                         throw std::string("Invalid\n");
@@ -326,9 +326,9 @@ public:
         if (accounts.GetCurrentPriority() < 1)
             throw std::string("Invalid\n");
         std::string ISBN_in = input.NextToken();
-        CheckType4(ISBN_in);
+//        CheckType4(ISBN_in);
         std::string quantity_in_str = input.NextToken();
-        CheckType6(quantity_in_str);
+//        CheckType6(quantity_in_str);
         std::string trush_in = input.NextToken();
         if (!trush_in.empty())
             throw std::string("Invalid\n");
@@ -347,7 +347,7 @@ public:
         book_data_.seekp(head_preserved_ + book_place * sizeof(Book));
         book_data_.write(reinterpret_cast<char *>(&book_find), sizeof(Book));
         double cost = double(book_find.price_ * quantity_in);
-        Log new_log(accounts.GetCurrentUser(), Behavior(3), true, cost);
+        Log new_log(accounts.GetCurrentUser().GetID(), Behavior(3), true, cost);
         logs.AddLog(new_log);
         std::cout.setf(std::ios::fixed);
         std::cout << std::setprecision(2) << cost << std::endl;
@@ -357,7 +357,7 @@ public:
         if (accounts.GetCurrentPriority() < 3)
             throw std::string("Invalid\n");
         std::string ISBN_in = input.NextToken();
-        CheckType4(ISBN_in);
+//        CheckType4(ISBN_in);
         std::string trush_in = input.NextToken();
         if (!trush_in.empty())
             throw std::string("Invalid\n");
@@ -414,7 +414,7 @@ public:
                     throw std::string("Invalid\n");
                 if_modify_type[0] = true;
                 ISBN_in = modify_command_single.GetRest();
-                CheckType4(ISBN_in);
+//                CheckType4(ISBN_in);
                 ISBN temp(ISBN_in);
                 int find = -1;
                 ISBN_book_map_.Get(temp, find);
@@ -433,11 +433,7 @@ public:
                 PairCheck(temp, '"');
                 bookname_modify.SetBuffer(temp);
                 bookname_in = bookname_modify.NextToken();
-                CheckType5(bookname_in);
-//                BookName temp(bookname_in);
-//                bookname_book_map_.Delete(temp, modified_book.ISBN_, modified_book.book_ID_);
-//                modified_book.book_name_ = temp;
-//                bookname_book_map_.Insert(temp, modified_book.ISBN_, modified_book.book_ID_);
+//                CheckType5(bookname_in);
             } else if (command_type == "-author") {
                 if (if_modify_type[2])
                     throw std::string("Invalid\n");
@@ -446,11 +442,7 @@ public:
                 PairCheck(temp, '"');
                 author_modify.SetBuffer(temp);
                 author_in = author_modify.NextToken();
-                CheckType5(author_in);
-//                Author temp(author_in);
-//                author_book_map_.Delete(temp, modified_book.ISBN_, modified_book.book_ID_);
-//                modified_book.author_ = temp;
-//                author_book_map_.Insert(temp, modified_book.ISBN_, modified_book.book_ID_);
+//                CheckType5(author_in);
             } else if (command_type == "-keyword") {
                 if (if_modify_type[3])
                     throw std::string("Invalid\n");
@@ -459,7 +451,7 @@ public:
                 PairCheck(temp, '"');
                 keyword_modify.SetBuffer(temp);
                 keywords_in = keyword_modify.NextToken();
-                CheckType5(keywords_in);
+//                CheckType5(keywords_in);
                 DelimiterCheck(keywords_in, '|');
                 TokenScanner keywords(keywords_in, '|');
                 keyword = keywords.NextToken();
@@ -476,7 +468,7 @@ public:
                     throw std::string("Invalid\n");
                 if_modify_type[4] = true;
                 std::string price_in_str = modify_command_single.GetRest();
-                CheckType7(price_in_str);
+//                CheckType7(price_in_str);
                 price_in = atof(price_in_str.c_str());
 //                modified_book.price_ = price_in;
             } else {
@@ -538,10 +530,10 @@ public:
         if (accounts.GetBookSelected() == -1)
             throw std::string("Invalid\n");
         std::string quantity_in_str = input.NextToken();
-        CheckType6(quantity_in_str);
+//        CheckType6(quantity_in_str);
         int quantity_in = atoi(quantity_in_str.c_str());
         std::string total_cost_in_str = input.NextToken();
-        CheckType7(total_cost_in_str);
+//        CheckType7(total_cost_in_str);
         double total_cost_in = atof(total_cost_in_str.c_str());
         std::string trush_in = input.NextToken();
         if (!trush_in.empty())
@@ -553,7 +545,7 @@ public:
         changed_book.total_cost_ += total_cost_in;
         book_data_.seekp(head_preserved_ + changed_book.book_ID_ * sizeof(Book));
         book_data_.write(reinterpret_cast<char *>(&changed_book), sizeof(Book));
-        Log new_log(accounts.GetCurrentUser(), Behavior(6), false, total_cost_in);
+        Log new_log(accounts.GetCurrentUser().GetID(), Behavior(6), false, total_cost_in);
         logs.AddLog(new_log);
     }
 };

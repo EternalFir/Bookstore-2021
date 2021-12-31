@@ -151,9 +151,9 @@ public:
     void SwitchUser(TokenScanner &input) {
         std::string ID_in, password_in,trush_in;
         ID_in = input.NextToken();
-        CheckType1(ID_in);
+//        CheckType1(ID_in);
         password_in = input.NextToken();
-        CheckType1(password_in);
+//        CheckType1(password_in);
         trush_in=input.NextToken();
         if(!trush_in.empty())
             throw std::string("Invalid\n");
@@ -197,15 +197,15 @@ public:
     void Register(TokenScanner &input) {
         std::string ID_in, password_in, name_in,trush_in;
         ID_in = input.NextToken();
-        CheckType1(ID_in);
+//        CheckType1(ID_in);
         if(ID_in.empty())
             throw std::string("Invalid\n");
         password_in = input.NextToken();
-        CheckType1(password_in);
+//        CheckType1(password_in);
         if(password_in.empty())
             throw std::string("Invalid\n");
         name_in = input.NextToken();
-        CheckType2(name_in);
+//        CheckType2(name_in);
         trush_in=input.NextToken();
         if(!trush_in.empty())
             throw std::string("Invalid\n");
@@ -226,7 +226,7 @@ public:
             throw std::string("Invalid\n");
         std::string ID_in, old_password_in, new_password_in,trush_in;
         ID_in = input.NextToken();
-        CheckType1(ID_in);
+//        CheckType1(ID_in);
         int find=-1;
         ID_user_map_.Get(ID_in,find);
         if (find == -1) {
@@ -242,14 +242,14 @@ public:
         account_data_.read(reinterpret_cast<char *>(&object), sizeof(User));
         if (new_password_in.empty()) {// 省略旧密码情况
             new_password_in = old_password_in;
-            CheckType1(new_password_in);
+//            CheckType1(new_password_in);
             if (this->GetCurrentPriority() == 7)
                 object.ChangePassword(new_password_in);
             else
                 throw std::string("Invalid\n");
         } else {// 未省略旧密码
-            CheckType1(old_password_in);
-            CheckType1(new_password_in);
+//            CheckType1(old_password_in);
+//            CheckType1(new_password_in);
             if (object.check_password(old_password_in))
                 object.ChangePassword(new_password_in);
             else
@@ -267,14 +267,14 @@ public:
         ID_in = input.NextToken();
         if(ID_in.empty())
             throw std::string("Invalid\n");
-        CheckType1(ID_in);
+//        CheckType1(ID_in);
         password_in = input.NextToken();
-        CheckType1(password_in);
+//        CheckType1(password_in);
         std::string priority_in_str=input.NextToken();
-        CheckType3(priority_in_str);
+//        CheckType3(priority_in_str);
         priority_in = atoi(priority_in_str.c_str());
         name_in = input.NextToken();
-        CheckType2(name_in);
+//        CheckType2(name_in);
         trush_in=input.NextToken();
         if(!trush_in.empty())
             throw std::string("Invalid\n");
@@ -297,7 +297,7 @@ public:
             throw std::string("Invalid\n");
         std::string ID_in,trush_in;
         ID_in = input.NextToken();
-        CheckType1(ID_in);
+//        CheckType1(ID_in);
         trush_in=input.NextToken();
         if(!trush_in.empty())
             throw std::string("Invalid\n");
