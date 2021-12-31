@@ -41,6 +41,9 @@ void CheckType3(const std::string &input) {
         throw std::string("Invalid\n");
     if (!isdigit(input[0]))
         throw std::string("Invalid\n");
+    int temp =atoi(input.c_str());
+    if(!(temp==1||temp==3||temp==7||temp==0))
+        throw std::string("Invalid\n");
 }
 
 void CheckType4(const std::string &input) {
