@@ -293,6 +293,8 @@ public:
     }
 
     void Delete(TokenScanner &input) {
+        if (this->GetCurrentPriority() < 7 )
+            throw std::string("Invalid\n");
         std::string ID_in,trush_in;
         ID_in = input.NextToken();
         CheckType1(ID_in);
