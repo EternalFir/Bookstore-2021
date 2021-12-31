@@ -69,7 +69,7 @@ int main() {
 //                std::cout<<"debug"<<std::endl;
 
 
-            CheckType0(command_in);
+//            CheckType0(command_in);
             TokenScanner command(command_in);
             std::string order;
             order = command.NextToken();
