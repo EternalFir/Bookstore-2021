@@ -13,49 +13,14 @@
 #include "Token_Scanner.h"
 #include "InputCheck.h"
 
-//struct Char {
-//    char value_[65];
-//
-//    bool operator==(const Char &rhs) const {
-//        if (strcmp(value_, rhs.value_) == 0)
-//            return true;
-//        else
-//            return false;
-//    }
-//
-//    bool operator!=(const Char &rhs) const {
-//        if (strcmp(value_, rhs.value_) != 0)
-//            return true;
-//        else
-//            return false;
-//    }
-//
-//    bool operator<(const Char &rhs) const {
-//        return strcmp(value_, rhs.value_) < 0;
-//    }
-//
-//    bool operator>(const Char &rhs) const {
-//        return strcmp(value_, rhs.value_) > 0;
-//    }
-//
-//    bool operator<=(const Char &rhs) const {
-//        return strcmp(value_, rhs.value_) <= 0;
-//    }
-//
-//    bool operator>=(const Char &rhs) const {
-//        return strcmp(value_, rhs.value_) >= 0;
-//    }
-//};
-
-//void Initialization();
-
-
 int main() {
 //#ifndef ONLINE_JUDGE
 //    freopen("4.txt","r",stdin);
 //    freopen("!output.txt","w",stdout);
 //#endif
 
+std::cout<<"\033[31m-----Welcome To The Bookstore-----"<<std::endl;
+std::cout<<"\033[35m Created By EternalFir\033[0m"<<std::endl;
     AccountManagement account_management;
     BookManagement book_management;
     std::string command_in;
@@ -95,7 +60,12 @@ int main() {
                 book_management.Modify(command, account_management, log_management);
             } else if (order == "import") {
                 book_management.ImportBook(command, account_management, log_management);
-            } else if (order == "quit") {
+            }else if(order=="report"){
+                log_management.Report(command,account_management);
+            }else if(order=="log"){
+                log_management.ShowLog(command,account_management);
+            }
+            else if (order == "quit") {
                 std::string trush_in = command.NextToken();
                 if (!trush_in.empty())
                     throw std::string("Invalid\n");

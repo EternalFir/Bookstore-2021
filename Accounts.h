@@ -338,6 +338,18 @@ public:
             std::cout<<now.user.GetID()<<'\t'<<now.user.GetPriority()<< std::endl;
         }
     }
+
+    void GetAllEmployee(std::vector<UserID> &ans ){
+        std::vector<int> address;
+        ID_user_map_.TraverseAll(address);
+        for(int i=0;i<address.size();i++){
+            User temp;
+            account_data_.seekg(head_preserved_+ sizeof(User)*address[i]);
+            account_data_.read(reinterpret_cast<char*>(&temp), sizeof(User));
+            if(temp.GetPriority()==3)
+                ans.push_back(temp.GetID());
+        }
+    }
 };
 
 #endif //BOOKSTORE_2021_ACCOUNTS_H
