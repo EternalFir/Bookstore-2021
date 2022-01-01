@@ -57,7 +57,7 @@ struct ISBN {
 };
 
 struct BookName {
-    char value[61];
+    char value[61]={'\0'};
 
     BookName() {}
 
@@ -349,6 +349,9 @@ public:
         double cost = double(book_find.price_ * quantity_in);
         Log new_log(accounts.GetCurrentUser().GetID(), Behavior(3), true, cost);
         logs.AddLog(new_log);
+        LogAll new_log_all(accounts.GetCurrentUser().GetID(), Behavior(3), cost, book_find.ISBN_.value,
+                           book_find.book_name_.value);
+        logs.AddAllLog(new_log_all);
         std::cout.setf(std::ios::fixed);
         std::cout << std::setprecision(2) << cost << std::endl;
     }
@@ -371,8 +374,17 @@ public:
             book_data_.write(reinterpret_cast<char *>(&new_book), sizeof(Book));
             ISBN_book_map_.Insert(ISBN_in, new_book.book_ID_);// 此时还无法插入到其余的三张表中
             accounts.UserSelect(new_book.book_ID_);
+            LogAll new_log_all(accounts.GetCurrentUser().GetID(), Behavior(4), 0.00,new_book.ISBN_.value,
+                            new_book.book_name_.value  );
+            logs.AddAllLog(new_log_all);
         } else {
             accounts.UserSelect(find);
+            Book book_find;
+            book_data_.seekg(head_preserved_+find* sizeof(Book));
+            book_data_.read(reinterpret_cast<char*>(&book_find), sizeof(Book));
+            LogAll new_log_all(accounts.GetCurrentUser().GetID(), Behavior(4), 0.00, book_find.ISBN_.value,
+                               book_find.book_name_.value);
+            logs.AddAllLog(new_log_all);
         }
         return;
     }
@@ -522,6 +534,9 @@ public:
         }
         book_data_.seekp(head_preserved_ + sizeof(Book) * modified_book.book_ID_);
         book_data_.write(reinterpret_cast<char *>(&modified_book), sizeof(Book));
+        LogAll new_log_all(accounts.GetCurrentUser().GetID(), Behavior(5),0.00, modified_book.ISBN_.value,
+                          modified_book.book_name_.value);
+        logs.AddAllLog(new_log_all);
     }
 
     void ImportBook(TokenScanner &input, AccountManagement &accounts, LogManagement &logs) {
@@ -547,6 +562,9 @@ public:
         book_data_.write(reinterpret_cast<char *>(&changed_book), sizeof(Book));
         Log new_log(accounts.GetCurrentUser().GetID(), Behavior(6), false, total_cost_in);
         logs.AddLog(new_log);
+        LogAll new_log_all(accounts.GetCurrentUser().GetID(), Behavior(6), total_cost_in, changed_book.ISBN_.value,
+                           changed_book.book_name_.value);
+        logs.AddAllLog(new_log_all);
     }
 };
 
