@@ -33,7 +33,6 @@ std::cout<<"\033[35m Created By EternalFir\033[0m"<<std::endl;
 //            if(command_in=="modify -name=\"despond\" -author=\"BaileyKent\" -keyword=\"UK\" -price=132.75")
 //                std::cout<<"debug"<<std::endl;
 
-
 //            CheckType0(command_in);
             TokenScanner command(command_in);
             std::string order;
@@ -66,6 +65,8 @@ std::cout<<"\033[35m Created By EternalFir\033[0m"<<std::endl;
                 log_management.ShowLog(command,account_management);
             }else if(order=="set"){
                 account_management.SetSecurityQuestion(command);
+            }else if(order=="reset"){
+                account_management.ResetPassword(command);
             }
             else if (order == "quit") {
                 std::string trush_in = command.NextToken();

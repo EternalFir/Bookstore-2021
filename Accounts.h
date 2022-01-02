@@ -116,6 +116,20 @@ public:
         return;
     }
 
+    bool IfSetQusetion(){
+        return if_set_question_;
+    }
+
+    std::string GetSecurityQuestion(){
+        std::string ans=security_question_;
+        return ans;
+    }
+
+    bool CheckAnswer(const std::string& answer_in){
+        if (strcmp(question_anwser_, answer_in.c_str()) == 0)
+            return true;
+        return false;
+    }
 };
 
 struct LogInAccount {
@@ -370,7 +384,7 @@ public:
             throw std::string("Invalid\n");
         User user_now = GetCurrentUser();
         std::cout << "\033[33mYou are setting your security question now." << std::endl;
-        std::cout << "Enter " << "\033[31mgiveup" << "\033[33m to exit.\033[0m" << std::endl;\
+        std::cout << "Enter " << "\033[31mgiveup" << "\033[33m to exit.\033[0m" << std::endl;
         std::cout << "Please enter your password:" << std::endl;
         std::string password_in, question_in, answer_in;
         while (1) {
@@ -395,6 +409,68 @@ public:
                 account_data_.write(reinterpret_cast<char *>(&user_now), sizeof(User));
                 std::cout << "Set successfully" << std::endl;
                 return;
+            }
+        }
+    }
+
+    void ResetPassword(TokenScanner &input) {
+        std::string password_in = input.NextToken();
+        if (password_in != "password")
+            throw std::string("Invalid\n");
+        std::string ID_in_str = input.NextToken();
+        if (ID_in_str.empty())
+            throw std::string("Invalid\n");
+        std::string trush_in = input.NextToken();
+        if (!trush_in.empty())
+            throw std::string("Invalid\n");
+        UserID ID_in(ID_in_str);
+        int find = -1;
+        ID_user_map_.Get(ID_in, find);
+        if (find == -1)
+            throw std::string("Invalid\n");
+        User changed_user;
+        account_data_.seekg(head_preserved_+ sizeof(User)*find);
+        account_data_.read(reinterpret_cast<char*>(&changed_user), sizeof(User));
+        if(!changed_user.IfSetQusetion()){
+            std::cout<<"Sorry, the account you select haven't set the security question yet."<<std::endl;
+            return;
+        }
+        std::cout << "\033[33mYou are resetting your password now." << std::endl;
+        std::cout << "Enter " << "\033[31mgiveup" << "\033[33m to exit.\033[0m" << std::endl;
+        std::cout<<"Your security question is:"<<std::endl;
+        std::cout<<"\033[32m"<<changed_user.GetSecurityQuestion()<<"\033[0m"<<std::endl;
+        std::string answer_in,new_password_in,new_password_in_second;
+        while (1) {
+            std::cout<<"Please enter the answer of your security question."<<std::endl;
+            getline(std::cin, answer_in);
+            if (password_in == "giveup")
+                return;
+            if (!changed_user.CheckAnswer(answer_in)) {
+                std::cout << "\033[31mWrong Answer\033[0m" << std::endl;
+                std::cout << "Please enter your answer:" << std::endl;
+            } else {
+                std::cout<<"Answer passed."<<std::endl;
+                std::cout << "Please enter your new password:" << std::endl;
+                getline(std::cin, new_password_in);
+                if (new_password_in == "giveup")
+                    return;
+                std::cout << "Please enter your new password again:" << std::endl;
+                getline(std::cin, new_password_in_second);
+                if (new_password_in_second == "giveup")
+                    return;
+                if(new_password_in==new_password_in_second){
+                    changed_user.ChangePassword(new_password_in);
+                    for(int j=0;j<log_in_.size();j++){
+                        if(log_in_[j].user.GetID()==changed_user.GetID())
+                            log_in_[j].user=changed_user;
+                    }
+                    account_data_.seekp(head_preserved_ + sizeof(User) * changed_user.GetAddress());
+                    account_data_.write(reinterpret_cast<char *>(&changed_user), sizeof(User));
+                    std::cout << "Set successfully" << std::endl;
+                    return;
+                }else{
+                    std::cout << "\033[31mError: Different password. Please try again.\033[0m" << std::endl;
+                }
             }
         }
     }
