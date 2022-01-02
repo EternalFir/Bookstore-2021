@@ -64,6 +64,8 @@ std::cout<<"\033[35m Created By EternalFir\033[0m"<<std::endl;
                 log_management.Report(command,account_management);
             }else if(order=="log"){
                 log_management.ShowLog(command,account_management);
+            }else if(order=="set"){
+                account_management.SetSecurityQuestion(command);
             }
             else if (order == "quit") {
                 std::string trush_in = command.NextToken();
