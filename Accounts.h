@@ -59,7 +59,7 @@ public:
     }
 
     friend std::ostream &operator<<(std::ostream &os, const UserID &id) {
-        os<< id.value_;
+        os << id.value_;
         return os;
     }
 };
@@ -71,8 +71,11 @@ private:
     char user_name_[31];
     char password_[31];
     int priority_;
+    char security_question_[61];
+    char question_anwser_[61];
+    bool if_set_question_ = false;
 public:
-    User(){}
+    User() {}
 
     User(int address_in, const std::string &ID_in, const std::string &password_in, const std::string &name_in,
          int priority_in) {
@@ -105,11 +108,19 @@ public:
             return true;
         return false;
     }
+
+    void SetQuestion(std::string &question_in, std::string &answer_in) {
+        if_set_question_ = true;
+        strcpy(security_question_, question_in.c_str());
+        strcpy(question_anwser_, answer_in.c_str());
+        return;
+    }
+
 };
 
 struct LogInAccount {
     User user;
-    int selected_book_ID=-1;
+    int selected_book_ID = -1;
 };
 
 class AccountManagement {
@@ -134,7 +145,7 @@ public:
             account_data_.write(reinterpret_cast<char *>(&account_num_), sizeof(int));
             account_data_.seekp(head_preserved_);
             account_data_.write(reinterpret_cast<char *>(&root), sizeof(User));
-            ID_user_map_.Insert(root.GetID(),root.GetAddress());
+            ID_user_map_.Insert(root.GetID(), root.GetAddress());
         } else {
             account_data_.seekg(0);
             account_data_.read(reinterpret_cast<char *>(&account_num_), sizeof(int));
@@ -149,17 +160,17 @@ public:
     }
 
     void SwitchUser(TokenScanner &input) {
-        std::string ID_in, password_in,trush_in;
+        std::string ID_in, password_in, trush_in;
         ID_in = input.NextToken();
 //        CheckType1(ID_in);
         password_in = input.NextToken();
 //        CheckType1(password_in);
-        trush_in=input.NextToken();
-        if(!trush_in.empty())
+        trush_in = input.NextToken();
+        if (!trush_in.empty())
             throw std::string("Invalid\n");
         User object;
-        int find=-1;
-        ID_user_map_.Get(ID_in,find);
+        int find = -1;
+        ID_user_map_.Get(ID_in, find);
         if (find == -1) {
             throw std::string("Invalid\n");
         }
@@ -182,35 +193,35 @@ public:
         }
     }
 
-    void Logout(TokenScanner& input) {
-        if (this->GetCurrentPriority() <1)
+    void Logout(TokenScanner &input) {
+        if (this->GetCurrentPriority() < 1)
             throw std::string("Invalid\n");
         if (log_in_.empty())
             throw std::string("Invalid\n");
-        std::string trush_in=input.NextToken();
-        if(!trush_in.empty())
+        std::string trush_in = input.NextToken();
+        if (!trush_in.empty())
             throw std::string("Invalid\n");
         log_in_.pop_back();
         return;
     }
 
     void Register(TokenScanner &input) {
-        std::string ID_in, password_in, name_in,trush_in;
+        std::string ID_in, password_in, name_in, trush_in;
         ID_in = input.NextToken();
 //        CheckType1(ID_in);
-        if(ID_in.empty())
+        if (ID_in.empty())
             throw std::string("Invalid\n");
         password_in = input.NextToken();
 //        CheckType1(password_in);
-        if(password_in.empty())
+        if (password_in.empty())
             throw std::string("Invalid\n");
         name_in = input.NextToken();
 //        CheckType2(name_in);
-        trush_in=input.NextToken();
-        if(!trush_in.empty())
+        trush_in = input.NextToken();
+        if (!trush_in.empty())
             throw std::string("Invalid\n");
-        int find=-1;
-        ID_user_map_.Get(ID_in,find);
+        int find = -1;
+        ID_user_map_.Get(ID_in, find);
         if (find != -1) {
             throw std::string("Invalid\n");
         }
@@ -222,20 +233,20 @@ public:
     }
 
     void ChangePassword(TokenScanner &input) {
-        if (this->GetCurrentPriority() <1)
+        if (this->GetCurrentPriority() < 1)
             throw std::string("Invalid\n");
-        std::string ID_in, old_password_in, new_password_in,trush_in;
+        std::string ID_in, old_password_in, new_password_in, trush_in;
         ID_in = input.NextToken();
 //        CheckType1(ID_in);
-        int find=-1;
-        ID_user_map_.Get(ID_in,find);
+        int find = -1;
+        ID_user_map_.Get(ID_in, find);
         if (find == -1) {
             throw std::string("Invalid\n");
         }
         old_password_in = input.NextToken();
         new_password_in = input.NextToken();
-        trush_in=input.NextToken();
-        if(!trush_in.empty())
+        trush_in = input.NextToken();
+        if (!trush_in.empty())
             throw std::string("Invalid\n");
         User object;
         account_data_.seekg(head_preserved_ + sizeof(User) * find);
@@ -260,28 +271,28 @@ public:
     }
 
     void UserAdd(TokenScanner &input) {
-        if (this->GetCurrentPriority() < 3 )
+        if (this->GetCurrentPriority() < 3)
             throw std::string("Invalid\n");
-        std::string ID_in, password_in, name_in,trush_in;
+        std::string ID_in, password_in, name_in, trush_in;
         int priority_in;
         ID_in = input.NextToken();
-        if(ID_in.empty())
+        if (ID_in.empty())
             throw std::string("Invalid\n");
 //        CheckType1(ID_in);
         password_in = input.NextToken();
 //        CheckType1(password_in);
-        std::string priority_in_str=input.NextToken();
+        std::string priority_in_str = input.NextToken();
 //        CheckType3(priority_in_str);
         priority_in = atoi(priority_in_str.c_str());
         name_in = input.NextToken();
 //        CheckType2(name_in);
-        trush_in=input.NextToken();
-        if(!trush_in.empty())
+        trush_in = input.NextToken();
+        if (!trush_in.empty())
             throw std::string("Invalid\n");
         if (GetCurrentPriority() <= priority_in)
             throw std::string("Invalid\n");
-        int find=-1;
-        ID_user_map_.Get(ID_in,find);
+        int find = -1;
+        ID_user_map_.Get(ID_in, find);
         if (find != -1) {
             throw std::string("Invalid\n");
         }
@@ -293,16 +304,16 @@ public:
     }
 
     void Delete(TokenScanner &input) {
-        if (this->GetCurrentPriority() < 7 )
+        if (this->GetCurrentPriority() < 7)
             throw std::string("Invalid\n");
-        std::string ID_in,trush_in;
+        std::string ID_in, trush_in;
         ID_in = input.NextToken();
 //        CheckType1(ID_in);
-        trush_in=input.NextToken();
-        if(!trush_in.empty())
+        trush_in = input.NextToken();
+        if (!trush_in.empty())
             throw std::string("Invalid\n");
-        int find=-1;
-        ID_user_map_.Get(ID_in,find);
+        int find = -1;
+        ID_user_map_.Get(ID_in, find);
         if (find == -1) {
             throw std::string("Invalid\n");
         }
@@ -318,36 +329,73 @@ public:
     }
 
     [[nodiscard]] int GetCurrentPriority() const {
-        if(log_in_.empty())
+        if (log_in_.empty())
             return -1;
         return log_in_[log_in_.size() - 1].user.GetPriority();
     }
 
-    [[nodiscard]] int GetBookSelected () const{
+    [[nodiscard]] int GetBookSelected() const {
         return log_in_[log_in_.size() - 1].selected_book_ID;
     }
 
-    [[nodiscard]] User GetCurrentUser()const{
+    [[nodiscard]] User GetCurrentUser() const {
         return log_in_[log_in_.size() - 1].user;
     }
 
-    void Debug(){
-        std::cout<<log_in_.size()<<std::endl;
-        for(int i=0;i<log_in_.size();++i){
-            LogInAccount now=log_in_[i];
-            std::cout<<now.user.GetID()<<'\t'<<now.user.GetPriority()<< std::endl;
+    void Debug() {
+        std::cout << log_in_.size() << std::endl;
+        for (int i = 0; i < log_in_.size(); ++i) {
+            LogInAccount now = log_in_[i];
+            std::cout << now.user.GetID() << '\t' << now.user.GetPriority() << std::endl;
         }
     }
 
-    void GetAllEmployee(std::vector<UserID> &ans ){
+    void GetAllEmployee(std::vector<UserID> &ans) {
         std::vector<int> address;
         ID_user_map_.TraverseAll(address);
-        for(int i=0;i<address.size();i++){
+        for (int i = 0; i < address.size(); i++) {
             User temp;
-            account_data_.seekg(head_preserved_+ sizeof(User)*address[i]);
-            account_data_.read(reinterpret_cast<char*>(&temp), sizeof(User));
-            if(temp.GetPriority()==3)
+            account_data_.seekg(head_preserved_ + sizeof(User) * address[i]);
+            account_data_.read(reinterpret_cast<char *>(&temp), sizeof(User));
+            if (temp.GetPriority() == 3)
                 ans.push_back(temp.GetID());
+        }
+    }
+
+    void SetSecurityQuestion(TokenScanner &input) {
+        std::string trush_in = input.NextToken();
+        if (!trush_in.empty())
+            throw std::string("Invalid\n");
+        if (log_in_.empty())
+            throw std::string("Invalid\n");
+        User user_now = GetCurrentUser();
+        std::cout << "\033[33mYou are setting your security question now." << std::endl;
+        std::cout << "Enter " << "\033[31mgiveup" << "\033[33m to exit.\033[0m" << std::endl;\
+        std::cout << "Please enter your password:" << std::endl;
+        std::string password_in, question_in, answer_in;
+        while (1) {
+            getline(std::cin, password_in);
+            if (password_in == "giveup")
+                return;
+            if (!user_now.check_password(password_in)) {
+                std::cout << "\033[31mWrong Password\033[0m" << std::endl;
+                std::cout << "Please enter your password:" << std::endl;
+            } else {
+                std::cout << "Enter your security queston:" << std::endl;
+                getline(std::cin, question_in);
+                if (question_in == "giveup")
+                    return;
+                std::cout << "Enter your security question answer:" << std::endl;
+                getline(std::cin, answer_in);
+                if (answer_in == "giveup")
+                    return;
+                user_now.SetQuestion(question_in, answer_in);
+                log_in_[log_in_.size() - 1].user = user_now;
+                account_data_.seekp(head_preserved_ + sizeof(User) * user_now.GetAddress());
+                account_data_.write(reinterpret_cast<char *>(&user_now), sizeof(User));
+                std::cout << "Set successfully" << std::endl;
+                return;
+            }
         }
     }
 };
