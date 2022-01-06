@@ -19,15 +19,20 @@ int main() {
 //    freopen("!output.txt","w",stdout);
 //#endif
 
-std::cout<<"\033[31m-----Welcome To The Bookstore-----"<<std::endl;
-std::cout<<"\033[35m Created By EternalFir\033[0m"<<std::endl;
+    std::cout << "\033[31m-----Welcome To The Bookstore-----" << std::endl;
+    std::cout << "\033[35m Created By EternalFir\033[0m" << std::endl;
     AccountManagement account_management;
     BookManagement book_management;
     std::string command_in;
     LogManagement log_management;
+    int times = 0;
     while (getline(std::cin, command_in)) {
+        times++;
+        if (times == 10) {
+            times = 0;
+            account_management.AutoSave();
+        }
         try {
-
 //            std::cout<<"# "<<command_in<<std::endl;
 
 //            if(command_in=="modify -name=\"despond\" -author=\"BaileyKent\" -keyword=\"UK\" -price=132.75")
@@ -59,16 +64,23 @@ std::cout<<"\033[35m Created By EternalFir\033[0m"<<std::endl;
                 book_management.Modify(command, account_management, log_management);
             } else if (order == "import") {
                 book_management.ImportBook(command, account_management, log_management);
-            }else if(order=="report"){
-                log_management.Report(command,account_management);
-            }else if(order=="log"){
-                log_management.ShowLog(command,account_management);
-            }else if(order=="set"){
+            } else if (order == "report") {
+                log_management.Report(command, account_management);
+            } else if (order == "log") {
+                log_management.ShowLog(command, account_management);
+            } else if (order == "set") {
                 account_management.SetSecurityQuestion(command);
-            }else if(order=="reset"){
+            } else if (order == "reset") {
                 account_management.ResetPassword(command);
-            }
-            else if (order == "quit") {
+            } else if (order == "save") {
+                times=0;
+                account_management.AutoSave();
+                std::cout<<"Save completed!"<<std::endl;
+            } else if (order == "load") {
+                times=0;
+                account_management.Load();
+                std::cout<<"Load completed!"<<std::endl;
+            } else if (order == "quit") {
                 std::string trush_in = command.NextToken();
                 if (!trush_in.empty())
                     throw std::string("Invalid\n");

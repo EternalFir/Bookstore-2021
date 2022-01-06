@@ -57,7 +57,7 @@ struct ISBN {
 };
 
 struct BookName {
-    char value[61]={'\0'};
+    char value[61] = {'\0'};
 
     BookName() {}
 
@@ -222,8 +222,10 @@ private:
     int book_num_;// 记录已存储过的图书数量，1_based
     int head_preserved_ = sizeof(int) + 5;
 public:
-    BookManagement() : ISBN_book_map_("ISBN_index_storage"), bookname_book_map_("bookname_index_storage"),
-                       author_book_map_("author_index_storage"), keyword_book_map_("keyword_index_storage") {
+    BookManagement() : ISBN_book_map_("ISBN_index_storage", "ISBN_index_ectype_storage"),
+                       bookname_book_map_("bookname_index_storage", "bookname_index_ectype_storage"),
+                       author_book_map_("author_index_storage", "author_index_ectype_storage"),
+                       keyword_book_map_("keyword_index_storage", "keyword_idnex_ectype_storage") {
         book_data_.open(data_name_);
         if (!book_data_) {
             book_data_.open(data_name_, std::ostream::out);
@@ -374,14 +376,14 @@ public:
             book_data_.write(reinterpret_cast<char *>(&new_book), sizeof(Book));
             ISBN_book_map_.Insert(ISBN_in, new_book.book_ID_);// 此时还无法插入到其余的三张表中
             accounts.UserSelect(new_book.book_ID_);
-            LogAll new_log_all(accounts.GetCurrentUser().GetID(), Behavior(4), 0.00,new_book.ISBN_.value,
-                            new_book.book_name_.value  );
+            LogAll new_log_all(accounts.GetCurrentUser().GetID(), Behavior(4), 0.00, new_book.ISBN_.value,
+                               new_book.book_name_.value);
             logs.AddAllLog(new_log_all);
         } else {
             accounts.UserSelect(find);
             Book book_find;
-            book_data_.seekg(head_preserved_+find* sizeof(Book));
-            book_data_.read(reinterpret_cast<char*>(&book_find), sizeof(Book));
+            book_data_.seekg(head_preserved_ + find * sizeof(Book));
+            book_data_.read(reinterpret_cast<char *>(&book_find), sizeof(Book));
             LogAll new_log_all(accounts.GetCurrentUser().GetID(), Behavior(4), 0.00, book_find.ISBN_.value,
                                book_find.book_name_.value);
             logs.AddAllLog(new_log_all);
@@ -534,8 +536,8 @@ public:
         }
         book_data_.seekp(head_preserved_ + sizeof(Book) * modified_book.book_ID_);
         book_data_.write(reinterpret_cast<char *>(&modified_book), sizeof(Book));
-        LogAll new_log_all(accounts.GetCurrentUser().GetID(), Behavior(5),0.00, modified_book.ISBN_.value,
-                          modified_book.book_name_.value);
+        LogAll new_log_all(accounts.GetCurrentUser().GetID(), Behavior(5), 0.00, modified_book.ISBN_.value,
+                           modified_book.book_name_.value);
         logs.AddAllLog(new_log_all);
     }
 
