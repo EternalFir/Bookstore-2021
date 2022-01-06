@@ -14,7 +14,7 @@
 #include "InputCheck.h"
 
 enum Behavior {
-    AddUser, Delete, Show, Sell, Select, Modify, Import
+    AddUser, Delete, Show, Sell, Select, Modify, Import,
 };
 
 struct Log {
@@ -157,11 +157,11 @@ public:
             if (accounts.GetCurrentPriority() < 3)
                 throw std::string("Invalid\n");
             UserID my_ID = accounts.GetCurrentUser().GetID();
-            std::cout << "\033[33maccount:\t" << my_ID << '\t' ;
-            if(accounts.GetCurrentPriority()==7)
-                std::cout<<"owner"<<std::endl;
+            std::cout << "\033[33maccount:\t" << my_ID << '\t';
+            if (accounts.GetCurrentPriority() == 7)
+                std::cout << "owner" << std::endl;
             else
-                std::cout<<"worker"<<std::endl;
+                std::cout << "worker" << std::endl;
             std::cout << "\033[34m[operation]" << '\t' << "[ISBN]" << '\t' << "[bookname]" << '\t' << "[amount]\033[0m"
                       << std::endl;
             for (int i = 0; i < log_all_num_; i++) {
