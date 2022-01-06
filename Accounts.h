@@ -457,7 +457,8 @@ public:
                 return;
             if (!changed_user.CheckAnswer(answer_in)) {
                 std::cout << "\033[31mWrong Answer\033[0m" << std::endl;
-                std::cout << "Please enter your answer:" << std::endl;
+                std::cout<<"Your security question is:"<<std::endl;
+                std::cout<<"\033[32m"<<changed_user.GetSecurityQuestion()<<"\033[0m"<<std::endl;
             } else {
                 std::cout<<"Answer passed."<<std::endl;
                 std::cout << "Please enter your new password:" << std::endl;
