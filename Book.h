@@ -214,13 +214,16 @@ public:
 class BookManagement {
 private:
     std::fstream book_data_;
+    std::fstream book_data_ectype_;
     std::string data_name_ = "book_data_storage";
+    std::string data_ectype_name_="book_data_ectype_storage_";
     UnrolledLinklist<ISBN, int> ISBN_book_map_;
     UnrolledLinklist_double_key<BookName, ISBN, int> bookname_book_map_;
     UnrolledLinklist_double_key<Author, ISBN, int> author_book_map_;
     UnrolledLinklist_double_key<Keyword, ISBN, int> keyword_book_map_;
     int book_num_;// 记录已存储过的图书数量，1_based
     int head_preserved_ = sizeof(int) + 5;
+    long last_save_time_;
 public:
     BookManagement() : ISBN_book_map_("ISBN_index_storage", "ISBN_index_ectype_storage"),
                        bookname_book_map_("bookname_index_storage", "bookname_index_ectype_storage"),
@@ -236,6 +239,13 @@ public:
             book_data_.seekg(0);
             book_data_.read(reinterpret_cast<char *>(&book_num_), sizeof(int));
         }
+        book_data_ectype_.open(data_ectype_name_);
+        if(!book_data_ectype_){
+            book_data_ectype_.open(data_ectype_name_,std::ostream::out);
+            book_data_ectype_.close();
+        }
+        last_save_time_=GetLastModifyTime();
+        Save();
     }
 
     ~BookManagement() {
@@ -567,6 +577,69 @@ public:
         LogAll new_log_all(accounts.GetCurrentUser().GetID(), Behavior(6), total_cost_in, changed_book.ISBN_.value,
                            changed_book.book_name_.value);
         logs.AddAllLog(new_log_all);
+    }
+    long GetLastModifyTime() {
+        book_data_.flush();
+        struct stat buf;
+        FILE *pFile = fopen(data_name_.c_str(), "r");
+        int fd = fileno(pFile);
+        fstat(fd, &buf);
+        long time = buf.st_mtime;
+        return time;
+    }
+
+    void Save() {
+        ISBN_book_map_.Save();
+        bookname_book_map_.Save();
+        author_book_map_.Save();
+        keyword_book_map_.Save();
+        char temp;
+        book_data_.seekg(0);
+        book_data_ectype_.open(data_ectype_name_, std::ostream::out);
+        book_data_ectype_.seekp(0);
+        while (!book_data_.eof()) {
+            book_data_.read(reinterpret_cast<char *>(&temp), sizeof(char));
+            book_data_ectype_.write(reinterpret_cast<char *>(&temp), sizeof(char));
+        }
+        book_data_ectype_.close();
+
+
+        book_data_.close();
+        book_data_.open(data_name_);
+        last_save_time_ = GetLastModifyTime();
+    }
+
+    void Load() {
+        ISBN_book_map_.Load();
+        bookname_book_map_.Load();
+        author_book_map_.Load();
+        keyword_book_map_.Load();
+        char temp;
+        book_data_.close();
+        book_data_.open(data_name_, std::ostream::out);
+        book_data_ectype_.open(data_ectype_name_);
+        book_data_.seekp(0);
+        book_data_ectype_.seekg(0);
+        while (!book_data_ectype_.eof()) {
+            book_data_ectype_.read(reinterpret_cast<char *>(&temp), sizeof(char));
+            book_data_.write(reinterpret_cast<char *>(&temp), sizeof(char));
+        }
+        book_data_ectype_.close();
+        book_data_.close();
+        book_data_.open(data_name_);
+        last_save_time_ = GetLastModifyTime();
+    }
+
+    void AutoSave() {
+        ISBN_book_map_.AutoSave();
+        bookname_book_map_.AutoSave();
+        author_book_map_.AutoSave();
+        keyword_book_map_.AutoSave();
+        long last_modify_time = GetLastModifyTime();
+        if (last_modify_time == last_save_time_)
+            return;
+        else
+            Save();
     }
 };
 
