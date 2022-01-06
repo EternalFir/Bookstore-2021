@@ -11,6 +11,11 @@
 #include <filesystem>
 #include <vector>
 
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 //双键版本
 template<typename key_type, typename sub_key_type, typename value_type>
 class UnrolledLinklist_double_key {
@@ -101,15 +106,18 @@ private:
 
     std::fstream index_;
     std::string index_name_;
+    std::fstream index_ectype_;
+    std::string index_ectype_name_;
 
     const unsigned int head_preserved = sizeof(int) * 3 + 2 * sizeof(Block) + 10;// 这个的存储是否会出问题？
     int head_num = -1;// 0_based
     int tail_num = -2;
     int block_num;// 已经使用过的块数目
 
+    long last_save_time_;
 public:
 
-    UnrolledLinklist_double_key(std::string in) {
+    UnrolledLinklist_double_key(std::string in,std::string in_2) {
         index_name_ = in;
         index_.open(index_name_);
         if (!index_) {
@@ -138,6 +146,14 @@ public:
             index_.read(reinterpret_cast<char *>(&tail_num), sizeof(int));
             index_.read(reinterpret_cast<char *>(&block_num), sizeof(int));
         }
+        index_ectype_name_=in_2;
+        index_ectype_.open(index_ectype_name_);
+        if(!index_ectype_){
+            index_ectype_.open(index_ectype_name_,std::ostream::out);
+            index_ectype_.close();
+        }
+        last_save_time_=GetLastModifyTime();
+        Save();
 //        index_.close();
     }
 
@@ -476,6 +492,56 @@ public:
                 r = mid - 1;
         }
         return;
+    }
+
+    long GetLastModifyTime(){
+        struct stat buf;
+        FILE *pFile=fopen(index_name_.c_str(),"r");
+        int fd=fileno(pFile);
+        fstat (fd,&buf);
+        long time=buf.st_mtime;
+        return time;
+    }
+
+    void Save() {
+        char temp;
+        index_.seekg(0);
+        index_ectype_.open(index_ectype_name_, std::ostream::out);
+        index_ectype_.seekp(0);
+        while (!index_.eof()) {
+            index_.read(reinterpret_cast<char *>(&temp), sizeof(char));
+            index_ectype_.write(reinterpret_cast<char *>(&temp), sizeof(char));
+        }
+        index_ectype_.close();
+
+        index_.close();
+        index_.open(index_name_);
+        last_save_time_ = GetLastModifyTime();
+    }
+
+    void Load() {
+        char temp;
+        index_.close();
+        index_.open(index_name_, std::ostream::out);
+        index_ectype_.open(index_ectype_name_);
+        index_.seekp(0);
+        index_ectype_.seekg(0);
+        while (!index_ectype_.eof()) {
+            index_ectype_.read(reinterpret_cast<char *>(&temp), sizeof(char));
+            index_.write(reinterpret_cast<char *>(&temp), sizeof(char));
+        }
+        index_ectype_.close();
+        index_.close();
+        index_.open(index_name_);
+        last_save_time_ = GetLastModifyTime();
+    }
+
+    void AutoSave() {
+        long last_modify_time = GetLastModifyTime();
+        if (last_modify_time == last_save_time_)
+            return;
+        else
+            Save();
     }
 };
 

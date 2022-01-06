@@ -141,12 +141,15 @@ class AccountManagement {
 private:
     std::vector<LogInAccount> log_in_;
     std::string data_name_ = "account_data_storage";
+    std::string data_ectype_name_="account_data_ectype_storage";
     std::fstream account_data_;
+    std::fstream account_data_ectype_;
     UnrolledLinklist<UserID, int> ID_user_map_;
     int account_num_;// 记录已存储过的账号数量，1_based
     int head_preserved_ = sizeof(int) + 5;
+    long last_save_time_;
 public:
-    AccountManagement() : ID_user_map_("account_index_storage") {
+    AccountManagement() : ID_user_map_("account_index_storage","account_index_ectype_storage") {
         account_data_.open(data_name_);
         if (!account_data_) {
             account_data_.open(data_name_, std::ostream::out);
@@ -164,7 +167,14 @@ public:
             account_data_.seekg(0);
             account_data_.read(reinterpret_cast<char *>(&account_num_), sizeof(int));
         }
+        account_data_ectype_.open(data_ectype_name_);
+        if(!account_data_ectype_){
+            account_data_ectype_.open(data_ectype_name_,std::ostream::out);
+            account_data_ectype_.close();
+        }
+        last_save_time_=GetLastModifyTime();
         log_in_.clear();
+        Save();
     }
 
     ~AccountManagement() {
@@ -473,6 +483,61 @@ public:
                 }
             }
         }
+    }
+
+    long GetLastModifyTime() {
+        account_data_.flush();
+        struct stat buf;
+        FILE *pFile = fopen(data_name_.c_str(), "r");
+        int fd = fileno(pFile);
+        fstat(fd, &buf);
+        long time = buf.st_mtime;
+        return time;
+    }
+
+    void Save() {
+        ID_user_map_.Save();
+        char temp;
+        account_data_.seekg(0);
+        account_data_ectype_.open(data_ectype_name_, std::ostream::out);
+        account_data_ectype_.seekp(0);
+        while (!account_data_.eof()) {
+            account_data_.read(reinterpret_cast<char *>(&temp), sizeof(char));
+            account_data_ectype_.write(reinterpret_cast<char *>(&temp), sizeof(char));
+        }
+        account_data_ectype_.close();
+
+
+        account_data_.close();
+        account_data_.open(data_name_);
+        last_save_time_ = GetLastModifyTime();
+    }
+
+    void Load() {
+        ID_user_map_.Load();
+        char temp;
+        account_data_.close();
+        account_data_.open(data_name_, std::ostream::out);
+        account_data_ectype_.open(data_ectype_name_);
+        account_data_.seekp(0);
+        account_data_ectype_.seekg(0);
+        while (!account_data_ectype_.eof()) {
+            account_data_ectype_.read(reinterpret_cast<char *>(&temp), sizeof(char));
+            account_data_.write(reinterpret_cast<char *>(&temp), sizeof(char));
+        }
+        account_data_ectype_.close();
+        account_data_.close();
+        account_data_.open(data_name_);
+        last_save_time_ = GetLastModifyTime();
+    }
+
+    void AutoSave() {
+        ID_user_map_.AutoSave();
+        long last_modify_time = GetLastModifyTime();
+        if (last_modify_time == last_save_time_)
+            return;
+        else
+            Save();
     }
 };
 

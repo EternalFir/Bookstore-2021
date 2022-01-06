@@ -83,6 +83,14 @@ typeinfo
 -
 vector
 -
+stdio.h
+-
+sys/types.h
+-
+sys/stat.h
+-
+unistd.h
+-
 
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist_double_key.h
 iostream
@@ -94,6 +102,14 @@ string
 filesystem
 -
 vector
+-
+stdio.h
+-
+sys/types.h
+-
+sys/stat.h
+-
+unistd.h
 -
 
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/main.cpp
