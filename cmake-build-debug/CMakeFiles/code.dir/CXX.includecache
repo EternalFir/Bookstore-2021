@@ -119,14 +119,6 @@ string
 -
 cstring
 -
-vector
--
-iomanip
--
-cstdio
--
-cctype
--
 Unrolled_Linklist.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Unrolled_Linklist.h
 Accounts.h
@@ -135,8 +127,4 @@ Log.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Log.h
 Book.h
 /mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Book.h
-Token_Scanner.h
-/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/Token_Scanner.h
-InputCheck.h
-/mnt/d/cys/SJTU/上课/程序设计/Bookstore/Bookstore-2021-main/Bookstore-2021/InputCheck.h
 
