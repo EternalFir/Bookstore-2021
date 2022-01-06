@@ -31,6 +31,8 @@ int main() {
         if (times == 20) {
             times = 0;
             account_management.AutoSave();
+            book_management.AutoSave();
+            std::cout<<"Auto save completed!"<<std::endl;
         }
         try {
 //            std::cout<<"# "<<command_in<<std::endl;
@@ -75,10 +77,12 @@ int main() {
             } else if (order == "save") {
                 times=0;
                 account_management.AutoSave();
+                book_management.AutoSave();
                 std::cout<<"Save completed!"<<std::endl;
             } else if (order == "load") {
                 times=0;
                 account_management.Load();
+                book_management.Load();
                 std::cout<<"Load completed!"<<std::endl;
             } else if (order == "quit") {
                 std::string trush_in = command.NextToken();
