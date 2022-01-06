@@ -216,7 +216,7 @@ private:
     std::fstream book_data_;
     std::fstream book_data_ectype_;
     std::string data_name_ = "book_data_storage";
-    std::string data_ectype_name_="book_data_ectype_storage_";
+    std::string data_ectype_name_="book_data_ectype_storage";
     UnrolledLinklist<ISBN, int> ISBN_book_map_;
     UnrolledLinklist_double_key<BookName, ISBN, int> bookname_book_map_;
     UnrolledLinklist_double_key<Author, ISBN, int> author_book_map_;
