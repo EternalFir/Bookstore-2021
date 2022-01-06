@@ -535,7 +535,6 @@ enum Behavior {AddUser, Delete, Show, Buy, Select, Modify, Import};
 struct Log {
   User user;
   enum behavior;
-  char description[150];
   bool if_earn = false; // 表示是否是收入
   double amount;
 };

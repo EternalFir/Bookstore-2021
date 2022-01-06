@@ -74,14 +74,10 @@ private:
     private:
 
     public:
-//        bool if_occupied;// 当前块是否已经使用
-
         // 目前尚未实现并块操作
         // 可以用另一个单链表实现对释放的空间的管理
 
         KeyValuePair value_[kMaxNumPerBlock + 10];
-//        KeyValuePair first_one;
-//        KeyValuePair last_one;
 
         Block() {
             next_num_ = -1,
@@ -154,11 +150,9 @@ public:
         }
         last_save_time_=GetLastModifyTime();
         Save();
-//        index_.close();
     }
 
     ~UnrolledLinklist_double_key() {
-//        index_.open(index_name_);
         index_.seekp(0);
         index_.write(reinterpret_cast<char *>(&head_num), sizeof(int));
         index_.write(reinterpret_cast<char *>(&tail_num), sizeof(int));
@@ -194,12 +188,10 @@ public:
         }
 // 执行插入操作
         search_block.elements_num_++;
-//        std::cerr<<search_block.elements_num_<< std::endl;
         for (int i = search_block.elements_num_; i > insert_place; i--) {
             search_block.value_[i] = search_block.value_[i - 1];
         }
         search_block.value_[insert_place] = in;
-//        index_.open(index_name_);
         if (insert_place == 0) {
             Block temp;
             int temp_num = search_block.prev_num_;
@@ -216,7 +208,6 @@ public:
         }
         index_.seekp(head_preserved + sizeof(Block) * search_block_num);
         index_.write(reinterpret_cast<char *>(&search_block), sizeof(Block));
-//        index_.close();
 // 再检查是否要裂块
         if (search_block.elements_num_ > kMaxNumPerBlock) {
             DivideBlock(search_block_num);
@@ -225,8 +216,6 @@ public:
 
 // 裂块函数
     void DivideBlock(int old_num) {
-//        index_.open(index_name_);
-//        index_.seekg(head_preserved + 1);
         int new_num = -1;
 
 //TODO: 与并块相匹配，外存回收
@@ -261,14 +250,12 @@ public:
         index_.write(reinterpret_cast<char *>(&new_block), sizeof(Block));
         index_.seekp(head_preserved + sizeof(Block) * next_block.my_num_);
         index_.write(reinterpret_cast<char *>(&next_block), sizeof(Block));
-//        index_.close();
 // 将原块的一半拷贝到新块上
         CopyBlock(new_num, old_num, kMaxNumPerBlock / 2);
     }
 
     // 将旧块从下标为start开始复制到新块中
     void CopyBlock(int new_num, int old_num, int start) {
-//        index_.open(index_name_);
         Block temp_old;
         Block temp_new(new_num);
         index_.seekg(head_preserved + old_num * sizeof(Block));
@@ -286,7 +273,6 @@ public:
         index_.write(reinterpret_cast<char *>(&temp_old), sizeof(Block));
         index_.seekp(head_preserved + new_num * sizeof(Block));
         index_.write(reinterpret_cast<char *>(&temp_new), sizeof(Block));
-//        index_.close();
     }
 
     Block FindBlockInsert(KeyValuePair in) {
@@ -341,11 +327,8 @@ public:
                 search_block.value_[i] = search_block.value_[i + 1];
             }
         }
-
-//        index_.open(index_name_);
         index_.seekp(head_preserved + sizeof(Block) * search_block_num);
         index_.write(reinterpret_cast<char *>(&search_block), sizeof(Block));
-//        index_.close();
 // 检查是否需要并块
         // TODO:
     }
@@ -367,23 +350,18 @@ public:
                 break;
             search_block_num = search_block.next_num_;
         }
-
-//        index_.close();
         return search_block;
     }
 
 // 先写成块内遍历的版本
 // TODO当前特为T1评测的输出版本
     void Traverse(std::vector<value_type> &ans, key_type in_key) {
-//        index_.open(index_name_);
         Block search_block;
         int search_block_num;
         search_block_num = head_num;
         index_.seekg(head_preserved + sizeof(Block) * search_block_num);
         index_.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
         search_block_num = search_block.next_num_;
-//        if (search_block.value_[0].key <= in_key && search_block.next_min_.key >= in_key)
-//            TraverseBlock(ans, search_block, in_key);
         while (search_block_num != tail_num) {
             index_.seekg(head_preserved + sizeof(Block) * search_block_num);
             index_.read(reinterpret_cast<char *>(&search_block), sizeof(Block));
@@ -397,7 +375,6 @@ public:
             }
             search_block_num = search_block.next_num_;
         }
-//        index_.close();
         return;
     }
 

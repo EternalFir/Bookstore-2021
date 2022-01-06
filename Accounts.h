@@ -12,7 +12,6 @@
 #include"Token_Scanner.h"
 #include "Unrolled_Linklist.h"
 #include "InputCheck.h"
-//#include "Log.h"
 
 class UserID {
 private:

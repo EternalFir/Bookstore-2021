@@ -1,17 +1,11 @@
 #include <iostream>
 #include <string>
 #include <cstring>
-#include <vector>
-#include <iomanip>
-#include <cstdio>
-#include <cctype>
 
 #include "Unrolled_Linklist.h"
 #include "Accounts.h"
 #include "Log.h"
 #include "Book.h"
-#include "Token_Scanner.h"
-#include "InputCheck.h"
 
 int main() {
 //#ifndef ONLINE_JUDGE
@@ -35,12 +29,6 @@ int main() {
             std::cout<<"Auto save completed!"<<std::endl;
         }
         try {
-//            std::cout<<"# "<<command_in<<std::endl;
-
-//            if(command_in=="modify -name=\"despond\" -author=\"BaileyKent\" -keyword=\"UK\" -price=132.75")
-//                std::cout<<"debug"<<std::endl;
-
-//            CheckType0(command_in);
             TokenScanner command(command_in);
             std::string order;
             order = command.NextToken();

@@ -20,7 +20,6 @@ enum Behavior {
 struct Log {
     UserID userID;
     Behavior behavior;
-//    char description[150];
     bool if_earn;
     double amount;
 

@@ -185,7 +185,6 @@ public:
     int book_ID_;
     int quantity_ = 0;
     double price_ = 0.0;
-//    bool if_just_ISBN_;// 是否仅有ISBN信息 TODO: 并不需要，Delete找不到便无变化
 
     Book() {}
 
@@ -196,12 +195,10 @@ public:
         quantity_ = quantity_in;
         price_ = price_in;
         total_cost_ = total_cost_in;
-//        if_just_ISBN_ = false;
     }
 
     Book(int ID_in, const std::string &ISBN_in) : ISBN_(ISBN_in), book_name_(""), author_(""), keyword_("") {
         book_ID_ = ID_in;
-//        if_just_ISBN_ = true;
     }
 
     friend std::ostream &operator<<(std::ostream &output, const Book &book_out) {
@@ -446,9 +443,6 @@ public:
                     throw std::string("Invalid\n");
                 if (temp == modified_book.ISBN_)
                     throw std::string("Invalid\n");
-//                ISBN_book_map_.Delete(modified_book.ISBN_, modified_book.book_ID_);
-//                modified_book.ISBN_ = temp;
-//                ISBN_book_map_.Insert(modified_book.ISBN_, modified_book.book_ID_);
             } else if (command_type == "-name") {
                 if (if_modify_type[1])
                     throw std::string("Invalid\n");
@@ -494,7 +488,6 @@ public:
                 std::string price_in_str = modify_command_single.GetRest();
 //                CheckType7(price_in_str);
                 price_in = atof(price_in_str.c_str());
-//                modified_book.price_ = price_in;
             } else {
                 throw std::string("Invalid\n");
             }
