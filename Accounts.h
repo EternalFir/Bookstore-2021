@@ -514,6 +514,10 @@ public:
     }
 
     void Load() {
+//        if (this->GetCurrentPriority() < 7)
+//            throw std::string("Invalid\n");
+//        if(log_in_.size()!=1)
+//            throw std::string("Invalid\n");
         ID_user_map_.Load();
         char temp;
         account_data_.close();
@@ -532,6 +536,10 @@ public:
     }
 
     void AutoSave() {
+//        if (this->GetCurrentPriority() < 7)
+//            throw std::string("Invalid\n");
+//        if(log_in_.size()!=1)
+//            throw std::string("Invalid\n");
         ID_user_map_.AutoSave();
         long last_modify_time = GetLastModifyTime();
         if (last_modify_time == last_save_time_)
