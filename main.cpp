@@ -22,7 +22,7 @@ int main() {
     int times = 0;
     while (getline(std::cin, command_in)) {
         times++;
-        if (times == 10) {
+        if (times == 20) {
             times = 0;
             account_management.AutoSave();
             book_management.AutoSave();
